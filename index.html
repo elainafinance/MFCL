@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Municipal Finance Control Layer - Public Demo</title>
+<link rel="icon" href="data:,">
 <style>
 :root{--nav:#0b1f33;--nav2:#102a43;--canvas:#f4f7fa;--card:#fff;--ink:#172b3a;--muted:#66788a;--line:#dce4eb;--accent:#147d7e;--accent2:#2563eb;--good:#1f7a4c;--warn:#9a6700;--bad:#b42318;--purple:#6d4aff;--shadow:0 4px 18px rgba(15,35,55,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--canvas)}
@@ -75,6 +76,16 @@ tbody tr:nth-child(even){background:#f2f7fa}
 .micro-note{font-size:11px;color:#5f7586}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 @media(max-width:1050px){.priority-grid,.state-sequence{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.priority-grid,.state-sequence{grid-template-columns:1fr}.page-head{padding:18px}.action-row .btn{width:100%}}
+</style><style id="mfcl-public-v2-style">
+.hero{background:linear-gradient(135deg,#071f37,#0b4160);color:#fff;padding:30px;border-radius:16px;border-left:7px solid #28b7c7;box-shadow:0 16px 36px rgba(7,31,55,.22)}
+.hero h3{font-size:36px;margin:10px 0;color:#fff}.hero p{color:#cce5eb;max-width:950px}.hero-lead{font-size:19px!important;color:#fff!important}
+.allocation-lab{display:grid;grid-template-columns:minmax(300px,1.1fr) minmax(320px,1fr);gap:16px;align-items:start;margin:15px 0}
+input[type=range]{width:100%;accent-color:#087f8c;margin:20px 0 8px}.range-labels{display:flex;justify-content:space-between;color:#587083;font-size:12px}
+.control-strip{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #cbdbe5;border-radius:10px;padding:14px;margin:14px 0;box-shadow:0 6px 18px rgba(7,31,55,.06)}
+.control-strip label{font-weight:800;color:#0b2d4b}.control-strip select{flex:1;max-width:460px;padding:10px;border:1px solid #aac2d2;border-radius:8px;background:#f8fbfd;color:#102a43}
+.note-preview{background:#fff;border:1px solid #cbdbe5;border-left:6px solid #087f8c;border-radius:10px;padding:22px;margin:14px 0;box-shadow:0 7px 20px rgba(7,31,55,.08)}
+.auth-card .table-wrap{background:rgba(255,255,255,.06)}.auth-card table{color:#fff}.auth-card td{border-color:rgba(255,255,255,.18)}.auth-card h4{color:#fff}.auth-card code{color:#7ee3ed}
+@media(max-width:900px){.allocation-lab{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div class="app">
@@ -107,332 +118,219 @@ tbody tr:nth-child(even){background:#f2f7fa}
   <div><div><h2 id="pageTitle">Control Room</h2></div><div class="top-meta"><span class="chip good">Public synthetic demo</span><span class="chip neutral">No client data</span><span class="chip neutral">Posting disabled</span></div></div><div class="content">
 
 <section class="page" id="overview">
-<div class="card" style="background:linear-gradient(135deg,#0b1f33,#173e5b);color:#fff;padding:28px;margin-bottom:18px">
-  <span class="chip good">Pinehaven public synthetic demonstration</span>
-  <h3 style="font-size:34px;margin:16px 0 8px;color:#fff">Municipal Finance Control Layer</h3>
-  <p style="font-size:18px;line-height:1.5;max-width:850px;color:#d8e5ee">Modernizing municipal finance without replacing the systems already in place.</p>
-  <p style="line-height:1.6;max-width:980px;color:#c5d6e2">MFCL integrates existing accounting/ERP, utility billing/cashiering, banking, payroll, grants/projects, and supporting documents into one controlled municipal finance layer.</p>
-  <div class="actions" style="margin-top:18px"><button class="btn accent" data-go="qbd">Explore the integration layer</button><button class="btn" data-go="verification">See role-based approval</button></div>
+<div class="hero">
+  <div class="eyebrow">Public synthetic product demonstration</div>
+  <h3>Municipal Finance Control Layer</h3>
+  <p class="hero-lead">Modernizing municipal finance without replacing the systems already in place.</p>
+  <p>Operate a fictional municipal close across ERP, cashiering, banking, payroll, restricted funds, grants, evidence, approvals, and reporting.</p>
+  <div class="actions"><button class="btn accent" id="guidedDemoBtn">Initialize Pinehaven close</button><button class="btn" data-go="payroll">Try payroll allocation</button><button class="btn" data-go="verification">Test approval controls</button></div>
 </div>
-<div class="banner"><strong>Existing-system positioning:</strong> Designed to integrate with existing and legacy QuickBooks Desktop environments; functionally tested with QuickBooks Desktop 2022 in a controlled test environment. <strong>No replacement ERP is required.</strong></div>
+<div class="priority-grid">
+  <div class="priority-stat"><span class="muted xs">Connected sources</span><b id="ovSources">0 / 6</b><span class="chip neutral" id="ovSourcesState">NOT INITIALIZED</span></div>
+  <div class="priority-stat"><span class="muted xs">Normalized events</span><b id="ovEvents">0</b><span class="chip neutral">Synthetic</span></div>
+  <div class="priority-stat"><span class="muted xs">Review exceptions</span><b id="ovExceptions">0</b><span class="chip neutral">Queue</span></div>
+  <div class="priority-stat"><span class="muted xs">Approved not posted</span><b id="ovApproved">0</b><span class="chip warn">Posting separate</span></div>
+</div>
 <div class="grid g3">
-  <div class="card"><h4>AI interprets context.</h4><p class="sm">Documents and operational context are organized into review-ready explanations.</p></div>
-  <div class="card"><h4>Controls decide.</h4><p class="sm">Structured checks determine whether an item clears, stops, or requires a qualified role.</p></div>
-  <div class="card"><h4>People authorize.</h4><p class="sm">Municipal officials and qualified reviewers retain factual verification, judgment, and approval authority.</p></div>
+  <div class="card"><h4>Operate the demo</h4><p class="sm">Every workspace changes a controlled synthetic population, amount, status, queue, or evidence chain.</p></div>
+  <div class="card"><h4>Follow the boundary</h4><p class="sm">AI interprets context. Controls decide. People authorize.</p></div>
+  <div class="card"><h4>Preserve authority</h4><p class="sm">Existing and legacy systems remain authoritative. No replacement ERP is required.</p></div>
 </div>
-<div class="card" style="margin-top:15px"><h4>One layer across the municipal finance lifecycle</h4><div class="module-grid">
-  <div class="module"><b>ERP integration</b><p>Connect existing accounting systems while preserving them as systems of record.</p></div>
-  <div class="module"><b>Revenue and cashiering</b><p>Link receipts, ownership, settlement, and accounting without relying on collection location.</p></div>
-  <div class="module"><b>Bank and card evidence</b><p>Use independent cash evidence for reconciliation and exception review.</p></div>
-  <div class="module"><b>Restricted funds</b><p>Test purpose and authority before an item can move to approval.</p></div>
-  <div class="module"><b>Payroll and grants</b><p>Connect position funding, award terms, eligibility, and expenditure evidence.</p></div>
-  <div class="module"><b>Close and reporting</b><p>Preserve lineage through statements, notes, SEFA, and audit support.</p></div>
-</div></div>
-<div class="banner warn"><strong>Public boundary:</strong> Every person, transaction, amount, fund example, and document shown here is fictional. This interface contains no client data, credentials, proprietary matching logic, posting implementation, or production accounting rules.</div>
+<div class="demo-result" id="overviewResult"><strong>Ready:</strong> initialize the fictional Pinehaven close, then open any workspace from the navigation.</div>
+<div class="banner warn"><strong>Public boundary:</strong> all people, events, amounts, documents, and identifiers are fictional. No external system, private data, or production posting path is connected.</div>
 </section><section class="page" id="qbd">
-<div class="page-head"><div><h3>ERP integration hub</h3><p>A public view of how MFCL connects existing accounting environments to a controlled municipal model while leaving the ERP in place.</p></div><button class="btn accent" data-demo="Integration profile checked">Run demonstration check</button></div>
-<div class="banner"><strong>QuickBooks Desktop compatibility:</strong> MFCL is designed for existing and legacy QuickBooks Desktop environments and was functionally tested with QuickBooks Desktop 2022 in a controlled test environment. Production compatibility always requires environment-specific validation.</div>
-<div class="architecture"><div class="arch-node"><strong>Existing accounting / ERP</strong><small>Remains the system of record</small></div><div class="arch-arrow">→</div><div class="arch-node"><strong>Controlled connector</strong><small>Read-oriented integration boundary</small></div><div class="arch-arrow">→</div><div class="arch-node"><strong>Municipal finance layer</strong><small>Fund, department, award, project, and evidence context</small></div><div class="arch-arrow">→</div><div class="arch-node"><strong>Review workspaces</strong><small>Exceptions, approvals, close, and reporting</small></div></div>
-<div class="grid g3" style="margin-top:15px"><div class="card"><h4>Existing systems stay</h4><p class="sm">No replacement ERP purchase is required to use the architecture concept.</p></div><div class="card"><h4>Multiple integration paths</h4><p class="sm">Desktop connectors, vendor APIs, approved reporting views, or controlled file delivery can feed the same public workflow concept.</p></div><div class="card"><h4>Posting remains separate</h4><p class="sm">The public demo shows approval outcomes only. It contains no ERP credentials or posting implementation.</p></div></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> ready to simulate a high-level compatibility check.</div>
-</section><section class="page" id="revenue">
-<div class="page-head"><div><h3>Revenue intake and cashiering</h3><p>Pinehaven's fictional cashiering activity illustrates how collection source, revenue ownership, tender, deposit, and destination fund remain separate facts.</p></div><button class="btn accent" data-demo="Synthetic receipt groups routed for review">Simulate receipt routing</button></div>
-<div class="banner"><strong>Control principle:</strong> where money is collected does not determine which fund owns the revenue.</div>
-<div class="table-wrap"><table><thead><tr><th>Synthetic receipt group</th><th>Collection source</th><th>Owning activity</th><th>Control result</th></tr></thead><tbody>
-<tr><td>Water and sewer charges</td><td>Municipal utility/cashiering system</td><td>Water and Sewer Fund</td><td><span class="chip good">Routine route</span></td></tr>
-<tr><td>Solid-waste charges</td><td>Municipal utility/cashiering system</td><td>General Fund sanitation activity</td><td><span class="chip info">Clearing required</span></td></tr>
-<tr><td>Community facility rentals</td><td>Central cashier</td><td>General Fund recreation activity</td><td><span class="chip good">Routine route</span></td></tr>
-<tr><td>County-distributed SPLOST proceeds</td><td>Central cashier</td><td>Restricted capital-project fund</td><td><span class="chip warn">Authority check</span></td></tr>
+<div class="page-head"><div><h3>ERP integration hub</h3><p>Version-aware, read-only source acquisition preserves system identity and incremental lineage.</p></div><button class="btn accent" id="syncBtn">Pull synthetic changes</button></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Watermark</span><b id="syncWatermark">09:00:00</b></div><div class="priority-stat"><span class="muted xs">Changes found</span><b id="syncCount">0</b></div><div class="priority-stat"><span class="muted xs">Duplicates blocked</span><b id="syncDupes">0</b></div><div class="priority-stat"><span class="muted xs">Write access</span><b>Disabled</b><span class="chip good">READ ONLY</span></div></div>
+<div class="table-wrap"><table><thead><tr><th>Source</th><th>Mode</th><th>New/changed</th><th>Result</th></tr></thead><tbody>
+  <tr><td>Legacy accounting / QBD</td><td>Incremental connector</td><td id="qbdDelta">0</td><td><span class="chip neutral sync-state">PENDING</span></td></tr>
+  <tr><td>Utility and cashiering</td><td>Controlled export</td><td id="utilityDelta">0</td><td><span class="chip neutral sync-state">PENDING</span></td></tr>
+  <tr><td>Evidence registry</td><td>Document index</td><td id="evidenceDelta">0</td><td><span class="chip neutral sync-state">PENDING</span></td></tr>
 </tbody></table></div>
-<div class="card" style="margin-top:15px"><h4>Three-way public control view</h4><div class="architecture"><div class="arch-node"><strong>Cashiering detail</strong><small>What was collected and why</small></div><div class="arch-arrow">↔</div><div class="arch-node"><strong>Bank evidence</strong><small>What settled and where</small></div><div class="arch-arrow">↔</div><div class="arch-node"><strong>ERP accounting</strong><small>How the transaction was recorded</small></div></div></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> synthetic receipt groups are ready.</div>
+<div class="demo-result" id="syncResult"><strong>Pending:</strong> no synthetic source changes have been pulled.</div>
+</section><section class="page" id="revenue">
+<div class="page-head"><div><h3>Revenue intake and cashiering</h3><p>Route mixed collections by owning fund, purpose, tender, deposit batch, and destination bank.</p></div><button class="btn accent" id="processRevenueBtn">Process cashier batch</button></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Batch gross</span><b>$134,935</b></div><div class="priority-stat"><span class="muted xs">Routine payload</span><b id="routinePayload">$59,935 pending</b></div><div class="priority-stat"><span class="muted xs">Restricted payload</span><b id="restrictedPayload">$75,000 pending</b></div><div class="priority-stat"><span class="muted xs">Authorization</span><b id="tokenState">NOT ISSUED</b></div></div>
+<div class="table-wrap"><table><thead><tr><th>Receipt group</th><th>Amount</th><th>Destination/control</th><th>Status</th></tr></thead><tbody id="revenueBody">
+  <tr data-routine="1"><td>Utility receipts</td><td>$38,460</td><td>Water operating bank</td><td><span class="chip neutral revenue-state">PENDING</span></td></tr>
+  <tr data-routine="1"><td>Property-tax remittance</td><td>$17,225</td><td>General Fund bank</td><td><span class="chip neutral revenue-state">PENDING</span></td></tr>
+  <tr data-routine="1"><td>Community rentals</td><td>$4,250</td><td>General recreation revenue</td><td><span class="chip neutral revenue-state">PENDING</span></td></tr>
+  <tr><td>Restricted capital receipt</td><td>$75,000</td><td id="splostDestination">Incorrect operating-bank destination</td><td id="splostRevenueStatus"><span class="chip neutral">PENDING</span></td></tr>
+</tbody></table></div>
+<div class="action-row"><button class="btn secondary" id="correctDestinationBtn">Correct restricted destination</button><button class="btn secondary" id="issueTokenBtn">Issue scoped demo authorization</button><button class="btn secondary" id="postRevenueBtn">Dry-run posting service</button></div>
+<div class="auth-card hidden" id="revenueTokenDisplay"></div>
+<div class="demo-result" id="revenueResult"><strong>Pending:</strong> cashier batch has not been evaluated.</div>
 </section><section class="page" id="bankfeed">
-  <div class="page-head"><div><h3>Bank, card, and reconciliation evidence</h3><p>A five-row synthetic population demonstrates exact, timing, fee, exception, and card-settlement dispositions.</p></div><button class="btn accent" id="bankReconBtn">Run read-only reconciliation</button></div>
-  <div class="priority-grid">
-    <div class="priority-stat"><span class="muted xs">Pending</span><b id="bankPending">5</b></div>
-    <div class="priority-stat"><span class="muted xs">Matched</span><b id="bankMatched">0</b></div>
-    <div class="priority-stat"><span class="muted xs">Timing / fee</span><b id="bankControlled">0</b></div>
-    <div class="priority-stat"><span class="muted xs">Exception</span><b id="bankException">0</b></div>
-  </div>
-  <div class="table-wrap"><table><thead><tr><th>Date</th><th>Bank evidence</th><th>ERP candidate</th><th>Relationship</th><th>Status</th></tr></thead><tbody>
-    <tr data-bank-state="MATCHED"><td>03/03/2026</td><td>$12,450.00 · tax distribution</td><td>$12,450.00 · receipt batch</td><td>Exact amount/date/reference</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
-    <tr data-bank-state="TIMING"><td>03/11/2026</td><td>$3,275.00 · deposit</td><td>$3,275.00 · posted 03/12</td><td>One-day settlement timing</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
-    <tr data-bank-state="FEE"><td>03/18/2026</td><td>$(18.00) · service fee</td><td>No entry</td><td>Bank-originated fee</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
-    <tr data-bank-state="EXCEPTION"><td>03/21/2026</td><td>$640.00 · ACH credit</td><td>No candidate</td><td>Support required</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
-    <tr data-bank-state="MATCHED"><td>03/25/2026</td><td>$4,850.00 · card settlement</td><td>$5,000.00 gross - $150.00 fee</td><td>Gross / fee / net</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
-  </tbody></table></div>
-  <div class="demo-result" id="bankResult"><strong>Pending:</strong> no row has been dispositioned. This browser simulation is read-only.</div>
+<div class="page-head"><div><h3>Bank, card, and reconciliation evidence</h3><p>Validated bank lines demonstrate exact, timing, fee, exception, and gross/fee/net settlement relationships.</p></div><button class="btn accent" id="bankReconBtn">Run read-only reconciliation</button></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Pending</span><b id="bankPending">5</b></div><div class="priority-stat"><span class="muted xs">Matched</span><b id="bankMatched">0</b></div><div class="priority-stat"><span class="muted xs">Timing / fee</span><b id="bankControlled">0</b></div><div class="priority-stat"><span class="muted xs">Exception</span><b id="bankException">0</b></div></div>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Bank evidence</th><th>ERP candidate</th><th>Relationship</th><th>Status</th></tr></thead><tbody>
+  <tr data-bank-state="MATCHED"><td>03/03/2026</td><td>$12,450 · tax distribution</td><td>$12,450 · receipt batch</td><td>Exact</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
+  <tr data-bank-state="TIMING"><td>03/11/2026</td><td>$3,275 · deposit</td><td>$3,275 · posted 03/12</td><td>One-day timing</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
+  <tr data-bank-state="FEE"><td>03/18/2026</td><td>$(18) · service fee</td><td>No entry</td><td>Bank-originated fee</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
+  <tr data-bank-state="EXCEPTION"><td>03/21/2026</td><td>$640 · ACH credit</td><td>No candidate</td><td>Support required</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
+  <tr data-bank-state="MATCHED"><td>03/25/2026</td><td>$4,850 · card settlement</td><td>$5,000 gross - $150 fee</td><td>Gross / fee / net</td><td><span class="chip neutral bank-status">PENDING</span></td></tr>
+</tbody></table></div><div class="demo-result" id="bankResult"><strong>Pending:</strong> no row has been dispositioned.</div>
 </section><section class="page" id="integrity">
-<div class="page-head"><div><h3>Cash integrity and anomaly review</h3><p>The public demo links unusual patterns for investigation without labeling a person or transaction as fraud.</p></div><button class="btn accent" data-demo="Synthetic anomaly moved to authorized review">Open synthetic review case</button></div>
-<div class="split"><div class="card"><h4>Fictional Pinehaven pattern</h4><div class="timeline"><div class="event"><b>Cashiering difference</b><p>A small synthetic shortage is preserved with its receipt and deposit evidence.</p></div><div class="event"><b>Later offsetting difference</b><p>A later synthetic overage is linked because the amount and collection point are similar.</p></div><div class="event"><b>Authorized investigation</b><p>The system assembles the evidence; a qualified human determines the conclusion.</p></div></div></div><div class="card"><h4>Control boundary</h4><p class="sm">Anomaly indicators prioritize review. They are not a fraud score, personnel finding, legal conclusion, or audit opinion.</p><span class="chip warn">Human determination required</span></div></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> synthetic anomaly not yet routed.</div>
+<div class="page-head"><div><h3>Cash integrity and fraud-risk triage</h3><p>Combine exception indicators without turning a risk signal into an accusation.</p></div><button class="btn accent" id="integrityCaseBtn">Evaluate synthetic anomaly</button></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Amount</span><b>$8,420</b></div><div class="priority-stat"><span class="muted xs">Evidence links</span><b id="riskEvidence">1 / 4</b></div><div class="priority-stat"><span class="muted xs">Risk indicators</span><b id="riskIndicators">0</b></div><div class="priority-stat"><span class="muted xs">Case state</span><b id="riskState">UNASSESSED</b></div></div>
+<div class="table-wrap"><table><thead><tr><th>Indicator</th><th>Observed fact</th><th>State</th></tr></thead><tbody>
+  <tr><td>Duplicate amount</td><td>Same vendor and amount within three days</td><td><span class="chip neutral risk-chip">PENDING</span></td></tr>
+  <tr><td>Missing support</td><td>One payment lacks an attached invoice</td><td><span class="chip neutral risk-chip">PENDING</span></td></tr>
+  <tr><td>Approval sequence</td><td>Approval timestamp precedes source attachment</td><td><span class="chip neutral risk-chip">PENDING</span></td></tr>
+</tbody></table></div>
+<div class="demo-result" id="integrityResult"><strong>Pending:</strong> the synthetic anomaly has not been triaged.</div>
 </section><section class="page" id="splost">
-  <div class="page-head"><div><h3>Restricted funds and SPLOST controls</h3><p>Synthetic purpose and eligibility controls remain separate from the fact that cash moved.</p></div><button class="btn accent" id="splostControlBtn">Evaluate synthetic controls</button></div>
-  <div class="table-wrap"><table><thead><tr><th>Event</th><th>Proposed purpose</th><th>Authority evidence</th><th>Control result</th><th>Approval routing</th></tr></thead><tbody>
-    <tr><td>PH-SP-101 · $28,000</td><td>Water-system capital improvement</td><td>Purpose aligned</td><td><span class="chip neutral" id="splostPassStatus">PENDING</span></td><td id="splostPassRoute">Not routed</td></tr>
-    <tr><td>PH-SP-102 · $6,800</td><td>Routine operating payroll</td><td>Purpose mismatch</td><td><span class="chip neutral" id="splostFailStatus">PENDING</span></td><td id="splostFailRoute">Not routed</td></tr>
-  </tbody></table></div>
-  <div class="demo-result" id="splostResult"><strong>Pending:</strong> both fictional transactions await deterministic purpose testing.</div>
-  <div class="banner warn"><strong>Control principle:</strong> memo language or cash movement does not establish restricted-use eligibility. Authority, project purpose, period, and evidence must align.</div>
+<div class="page-head"><div><h3>Restricted funds and SPLOST controls</h3><p>Purpose, period, project, budget, and authority must align before approval.</p></div><button class="btn accent" id="splostControlBtn">Evaluate synthetic controls</button></div>
+<div class="table-wrap"><table><thead><tr><th>Event</th><th>Proposed purpose</th><th>Authority evidence</th><th>Control result</th><th>Routing</th></tr></thead><tbody>
+  <tr><td>PH-SP-101 · $28,000</td><td>Water-system capital improvement</td><td>Purpose aligned</td><td><span class="chip neutral" id="splostPassStatus">PENDING</span></td><td id="splostPassRoute">Not routed</td></tr>
+  <tr><td>PH-SP-102 · $6,800</td><td>Routine operating payroll</td><td>Purpose mismatch</td><td><span class="chip neutral" id="splostFailStatus">PENDING</span></td><td id="splostFailRoute">Not routed</td></tr>
+</tbody></table></div><div class="demo-result" id="splostResult"><strong>Pending:</strong> both transactions await purpose testing.</div>
 </section><section class="page" id="interfund">
-  <div class="page-head"><div><h3>Interfund recognition and cash settlement</h3><p>Recognition, reciprocal balances, and later cash settlement are displayed as distinct economic steps.</p></div><button class="btn accent" id="interfundSettlementBtn">Simulate reciprocal settlement</button></div>
-  <div class="priority-grid">
-    <div class="priority-stat"><span class="muted xs">General Due From Water</span><b id="ifDueFrom">$3,200.00</b><span class="chip info">Before settlement</span></div>
-    <div class="priority-stat"><span class="muted xs">Water Due To General</span><b id="ifDueTo">$3,200.00</b><span class="chip info">Before settlement</span></div>
-    <div class="priority-stat"><span class="muted xs">Reciprocal divergence</span><b id="ifDivergence">$0.00</b><span class="chip good">Balanced</span></div>
-    <div class="priority-stat"><span class="muted xs">Cash settlement</span><b id="ifCashState">PENDING</b><span class="chip warn">Separate event</span></div>
-  </div>
-  <div class="chain"><div class="chain-node"><span>1</span><b>Underlying service</b><small>$3,200 centrally paid cost</small></div><div class="chain-node"><span>2</span><b>Interfund recognition</b><small>Due From / Due To</small></div><div class="chain-node"><span>3</span><b>Cash settlement</b><small>Separate reciprocal transfer</small></div><div class="chain-node"><span>4</span><b>Ending control</b><small>Both balances cleared</small></div></div>
-  <div class="demo-result" id="interfundResult"><strong>Recognized, not settled:</strong> reciprocal balances agree at $3,200.00; cash settlement remains pending.</div>
+<div class="page-head"><div><h3>Interfund recognition and cash settlement</h3><p>Recognition, reciprocal balances, and later settlement remain distinct events.</p></div><button class="btn accent" id="interfundSettlementBtn">Simulate reciprocal settlement</button></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">General Due From Water</span><b id="ifDueFrom">$3,200</b></div><div class="priority-stat"><span class="muted xs">Water Due To General</span><b id="ifDueTo">$3,200</b></div><div class="priority-stat"><span class="muted xs">Divergence</span><b id="ifDivergence">$0</b></div><div class="priority-stat"><span class="muted xs">Cash settlement</span><b id="ifCashState">PENDING</b></div></div>
+<div class="chain"><div class="chain-node"><span>1</span><b>Underlying service</b><small>$3,200 centrally paid</small></div><div class="chain-node"><span>2</span><b>Recognition</b><small>Due From / Due To</small></div><div class="chain-node"><span>3</span><b>Settlement</b><small>Reciprocal cash movement</small></div><div class="chain-node"><span>4</span><b>Ending control</b><small>Both balances clear</small></div></div>
+<div class="demo-result" id="interfundResult"><strong>Recognized, not settled:</strong> reciprocal balances agree at $3,200.</div>
 </section><section class="page" id="p2p">
-<div class="page-head"><div><h3>Purchase-to-pay and cards</h3><p>The original purchase, budget and restriction checks, approval, payment, and later card or bank settlement remain connected.</p></div><button class="btn accent" data-demo="Synthetic purchase control package prepared">Simulate control result</button></div>
-<div class="table-wrap"><table><thead><tr><th>Public synthetic case</th><th>Controls shown</th><th>Result</th></tr></thead><tbody><tr><td>Routine maintenance invoice</td><td>Vendor, department, budget, duplicate, approval</td><td><span class="chip warn">Approval required</span></td></tr><tr><td>Restricted capital invoice</td><td>Authority, project, contract, support, restriction</td><td><span class="chip warn">Required-role review</span></td></tr><tr><td>Purchasing-card charge</td><td>Cardholder, receipt, business purpose, coding</td><td><span class="chip bad">Hold if evidence missing</span></td></tr></tbody></table></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> no accounting or payment action has occurred.</div>
+<div class="page-head"><div><h3>Purchase-to-pay and card controls</h3><p>Test vendor, budget, support, restriction, approval, and exact-payload integrity.</p></div><button class="btn accent" id="spendControlBtn">Run spend controls</button></div>
+<div class="table-wrap"><table><thead><tr><th>Case</th><th>Amount</th><th>Control issue</th><th>Status</th></tr></thead><tbody>
+  <tr><td>Routine maintenance invoice</td><td>$4,800</td><td>Vendor + budget + invoice agree</td><td><span class="chip neutral" id="p2pRoutine">PENDING</span></td></tr>
+  <tr><td>Restricted capital invoice</td><td>$12,600</td><td>Project authority absent</td><td><span class="chip neutral" id="p2pRestricted">PENDING</span></td></tr>
+  <tr><td>Purchasing-card charge</td><td>$286</td><td>Receipt absent</td><td><span class="chip neutral" id="p2pCard">PENDING</span></td></tr>
+</tbody></table></div>
+<div class="action-row"><button class="btn secondary" id="tamperTokenBtn">Change approved payload</button></div>
+<div class="demo-result" id="p2pTokenPanel"><strong>Pending:</strong> no posting candidate has been assembled.</div>
 </section><section class="page" id="payroll">
-<div class="page-head"><div><h3>Payroll and position funding</h3><p>Employee, position, department, paying source, benefiting fund, award, and allocation remain separate controlled dimensions.</p></div><button class="btn accent" data-demo="Synthetic allocation passed the presentation check">Check synthetic allocation</button></div>
-<div class="table-wrap"><table><thead><tr><th>Synthetic position</th><th>Benefiting activity</th><th>Illustrative allocation</th><th>Verification</th></tr></thead><tbody><tr><td>Public Works Technician</td><td>General Fund streets</td><td>70%</td><td>Department + finance</td></tr><tr><td>Public Works Technician</td><td>Water and Sewer operations</td><td>30%</td><td>Utility + finance</td></tr><tr><td>Grant-funded public-safety position</td><td>Eligible award activity</td><td>Terms-controlled</td><td>Grant owner + finance</td></tr></tbody></table></div>
-<div class="banner warn"><strong>Change control:</strong> a changed position, percentage, award, or effective period reopens verification.</div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> synthetic allocation ready.</div>
+<div class="page-head"><div><h3>Payroll and position funding</h3><p>Change a fictional employee's funding split and watch the verification and interfund consequences.</p></div><button class="btn accent" id="payrollRunBtn">Calculate allocation</button></div>
+<div class="allocation-lab">
+  <div class="card"><h4>Public Works Technician · $10,000 payroll</h4><label for="payrollRange"><strong>General Fund allocation: <span id="payrollPct">60%</span></strong></label><input id="payrollRange" type="range" min="60" max="70" value="60" step="1"><div class="range-labels"><span>Approved 60%</span><span>Proposed 70%</span></div><div class="action-row"><button class="btn secondary" id="payrollChangeBtn">Propose 70% / 30%</button><button class="btn secondary" id="payrollVerifyBtn" disabled>Verify changed allocation</button></div></div>
+  <div class="grid g3"><div class="priority-stat"><span class="muted xs">General Fund</span><b id="payrollGF">$6,000</b></div><div class="priority-stat"><span class="muted xs">Water and Sewer</span><b id="payrollWater">$4,000</b></div><div class="priority-stat"><span class="muted xs">Control total</span><b id="payrollTie">$10,000 ✓</b></div></div>
+</div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Approved rule</span><b>60% / 40%</b></div><div class="priority-stat"><span class="muted xs">Proposed rule</span><b id="payrollProposed">None</b></div><div class="priority-stat"><span class="muted xs">Change count</span><b id="payrollChangeKpi">0</b></div><div class="priority-stat"><span class="muted xs">Verification</span><b><span class="chip good" id="payrollChangeState">CURRENT</span></b></div></div>
+<div class="demo-result" id="payrollPanel"><strong>Approved rule ready:</strong> calculate the 60% General / 40% Water allocation, or propose a change to 70% / 30%.</div>
 </section><section class="page" id="departments">
-<div class="page-head"><div><h3>Budget and departmental reporting</h3><p>Management views can show police, fire, public works, and recreation activity without pretending each department is a separate legal fund or bank account.</p></div><button class="btn accent" data-demo="Synthetic departmental view refreshed">Refresh synthetic view</button></div>
-<div class="grid g4"><div class="card"><div class="muted xs">Police</div><div class="kpi" style="font-size:20px">P&amp;L view</div><span class="chip good">Available</span></div><div class="card"><div class="muted xs">Fire</div><div class="kpi" style="font-size:20px">P&amp;L view</div><span class="chip good">Available</span></div><div class="card"><div class="muted xs">Public Works</div><div class="kpi" style="font-size:20px">Budget view</div><span class="chip good">Available</span></div><div class="card"><div class="muted xs">Community Center</div><div class="kpi" style="font-size:20px">Program view</div><span class="chip good">Available</span></div></div>
-<div class="banner"><strong>Reporting boundary:</strong> pooled General Fund cash may be attributed for management analysis, but it is not represented as a separate departmental bank account.</div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> public-safe management views ready.</div>
+<div class="page-head"><div><h3>Budget and departmental reporting</h3><p>Change the management view without pretending a department is a separate legal fund.</p></div><button class="btn accent" id="departmentRefreshBtn">Refresh selected department</button></div>
+<div class="control-strip"><label for="departmentSelect">Department view</label><select id="departmentSelect"><option value="police">Police</option><option value="fire">Fire</option><option value="streets">Public Works</option><option value="recreation">Community Programs</option></select></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Adopted budget</span><b id="deptBudget">$520,000</b></div><div class="priority-stat"><span class="muted xs">Year-to-date actual</span><b id="deptActual">$438,600</b></div><div class="priority-stat"><span class="muted xs">Available</span><b id="deptAvailable">$81,400</b></div><div class="priority-stat"><span class="muted xs">Status</span><b id="deptStatus">84.3% used</b></div></div>
+<div class="table-wrap"><table><thead><tr><th>Account family</th><th>Budget</th><th>Actual</th><th>Variance</th></tr></thead><tbody id="departmentBody"></tbody></table></div>
+<div class="demo-result" id="departmentResult"><strong>Police selected:</strong> refresh to populate the synthetic departmental detail.</div>
 </section><section class="page" id="grants">
-  <div class="page-head"><div><h3>Grants, federal awards, and SEFA</h3><p>A fictional pass-through award demonstrates evidence-to-expenditure-to-SEFA lineage.</p></div><button class="btn accent" id="sefaAssembleBtn">Assemble draft SEFA</button></div>
-  <div class="grid g3">
-    <div class="card"><h4>Fictional award</h4><p class="sm"><strong>Agency:</strong> Federal Infrastructure Agency<br><strong>ALN:</strong> 99.999<br><strong>Pass-through:</strong> Georgia Municipal Programs Office</p></div>
-    <div class="card"><h4>Award period</h4><p class="sm">07/01/2025 - 06/30/2027<br><strong>Award ID:</strong> PH-FA-2025-019<br><span class="chip info">Public synthetic</span></p></div>
-    <div class="card"><h4>Control sequence</h4><p class="sm">SEFA → expenditure → transaction → supporting evidence</p></div>
-  </div>
-  <div class="table-wrap"><table><thead><tr><th>Expenditure</th><th>Amount</th><th>Evidence</th><th>Eligibility</th><th>SEFA state</th></tr></thead><tbody>
-    <tr data-sefa="include"><td>PH-EXP-101 · equipment</td><td>$18,400.00</td><td>PH-EVID-101 linked</td><td><span class="chip good">ELIGIBLE</span></td><td><span class="chip neutral sefa-state">PENDING</span></td></tr>
-    <tr data-sefa="include"><td>PH-EXP-102 · project payroll</td><td>$7,250.00</td><td>PH-EVID-102 linked</td><td><span class="chip good">ELIGIBLE</span></td><td><span class="chip neutral sefa-state">PENDING</span></td></tr>
-    <tr data-sefa="exclude"><td>PH-EXP-103 · hospitality</td><td>$925.00</td><td>PH-EVID-103 incomplete</td><td><span class="chip bad">INELIGIBLE</span></td><td><span class="chip neutral sefa-state">PENDING</span></td></tr>
-  </tbody></table></div>
-  <div class="demo-result" id="sefaResult"><strong>Pending:</strong> eligible expenditure population has not been assembled.</div>
-  <div class="table-wrap hidden" id="sefaDraft"><table><thead><tr><th>Federal agency / ALN</th><th>Pass-through / award</th><th>Evidence-linked expenditures</th><th>Draft SEFA total</th></tr></thead><tbody><tr><td>Federal Infrastructure Agency · 99.999</td><td>Georgia Municipal Programs Office · PH-FA-2025-019</td><td>PH-EXP-101; PH-EXP-102</td><td class="amount-good">$25,650.00</td></tr></tbody></table></div>
+<div class="page-head"><div><h3>Grants, federal awards, and SEFA</h3><p>Assemble a fictional pass-through award from evidence-linked eligible expenditures.</p></div><button class="btn accent" id="sefaAssembleBtn">Assemble draft SEFA</button></div>
+<div class="grid g3"><div class="card"><h4>Fictional award</h4><p class="sm">Federal Infrastructure Agency · ALN 99.999</p></div><div class="card"><h4>Pass-through</h4><p class="sm">Georgia Municipal Programs Office · PH-FA-2025-019</p></div><div class="card"><h4>Award period</h4><p class="sm">07/01/2025 - 06/30/2027</p></div></div>
+<div class="table-wrap"><table><thead><tr><th>Expenditure</th><th>Amount</th><th>Evidence</th><th>Eligibility</th><th>SEFA state</th></tr></thead><tbody>
+  <tr data-sefa="include"><td>PH-EXP-101 · equipment</td><td>$18,400</td><td>PH-EVID-101 linked</td><td><span class="chip good">ELIGIBLE</span></td><td><span class="chip neutral sefa-state">PENDING</span></td></tr>
+  <tr data-sefa="include"><td>PH-EXP-102 · project payroll</td><td>$7,250</td><td>PH-EVID-102 linked</td><td><span class="chip good">ELIGIBLE</span></td><td><span class="chip neutral sefa-state">PENDING</span></td></tr>
+  <tr data-sefa="exclude"><td>PH-EXP-103 · hospitality</td><td>$925</td><td>PH-EVID-103 incomplete</td><td><span class="chip bad">INELIGIBLE</span></td><td><span class="chip neutral sefa-state">PENDING</span></td></tr>
+</tbody></table></div><div class="demo-result" id="sefaResult"><strong>Pending:</strong> eligible expenditure population has not been assembled.</div><div class="table-wrap hidden" id="sefaDraft"><table><thead><tr><th>Agency / ALN</th><th>Award</th><th>Included evidence</th><th>Draft total</th></tr></thead><tbody><tr><td>Federal Infrastructure Agency · 99.999</td><td>PH-FA-2025-019</td><td>PH-EXP-101; PH-EXP-102</td><td class="amount-good">$25,650</td></tr></tbody></table></div>
 </section><section class="page" id="assembly">
-<div class="page-head"><div><h3>Financial reporting assembly</h3><p>Fund detail, conversion and elimination support, management statements, and audit-ready schedules are assembled from controlled source populations.</p></div><button class="btn accent" data-go="audit">View evidence lineage</button></div>
-<div class="flow"><div class="flow-step"><span class="step-dot ok"></span><div><strong>Source books and subledgers</strong><div class="muted xs">Existing systems remain authoritative.</div></div><span class="chip good">Linked</span></div><div class="flow-step"><span class="step-dot ok"></span><div><strong>Closing schedules</strong><div class="muted xs">Cash, interfund, capital, debt, payroll, grants, and budget support.</div></div><span class="chip info">Controlled</span></div><div class="flow-step"><span class="step-dot ok"></span><div><strong>Fund and government-wide presentation</strong><div class="muted xs">Detailed schedules remain traceable through conversions and eliminations.</div></div><span class="chip purple">Assembled</span></div><div class="flow-step"><span class="step-dot ok"></span><div><strong>Management reporting package</strong><div class="muted xs">Statements, notes, SEFA, compliance, and auditor support.</div></div><span class="chip warn">Human review</span></div></div>
-<div class="banner warn"><strong>Boundary:</strong> this public demo is not an audit, assurance report, or financial statement opinion.</div>
+<div class="page-head"><div><h3>Financial reporting assembly</h3><p>Move controlled source populations through fund statements, conversion, eliminations, and management review.</p></div><button class="btn accent" id="assemblyBtn">Assemble synthetic statements</button></div>
+<div class="flow" id="assemblyFlow"><div class="flow-step"><span class="step-dot"></span><div><strong>Source books</strong><div class="muted xs">Trial balances and subledgers</div></div><span class="chip neutral assembly-state">PENDING</span></div><div class="flow-step"><span class="step-dot"></span><div><strong>Closing schedules</strong><div class="muted xs">Cash, interfund, payroll, grants</div></div><span class="chip neutral assembly-state">PENDING</span></div><div class="flow-step"><span class="step-dot"></span><div><strong>Reporting conversion</strong><div class="muted xs">Capital, debt, and eliminations</div></div><span class="chip neutral assembly-state">PENDING</span></div><div class="flow-step"><span class="step-dot"></span><div><strong>Management package</strong><div class="muted xs">Statements, notes, SEFA</div></div><span class="chip neutral assembly-state">PENDING</span></div></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Fund statements</span><b id="assemblyFunds">0 / 4</b></div><div class="priority-stat"><span class="muted xs">Eliminations</span><b id="assemblyElims">0</b></div><div class="priority-stat"><span class="muted xs">Open review items</span><b id="assemblyOpen">4</b></div><div class="priority-stat"><span class="muted xs">Package state</span><b id="assemblyStatus">NOT ASSEMBLED</b></div></div>
+<div class="demo-result" id="assemblyResult"><strong>Pending:</strong> controlled reporting populations are ready to assemble.</div>
 </section><section class="page" id="disclosures">
-<div class="page-head"><div><h3>Disclosures and notes</h3><p>Controlled facts and reporting values support drafting; qualified reviewers verify applicability, accounting judgment, and management responsibility.</p></div><button class="btn accent" data-demo="Synthetic note moved to review">Draft synthetic note</button></div>
-<div class="grid g3"><div class="card"><h4>Source facts</h4><p class="sm">Effective dates, authorities, schedules, and evidence references remain structured.</p></div><div class="card"><h4>Draft narrative</h4><p class="sm">AI may prepare understandable language from verified context.</p></div><div class="card"><h4>Required review</h4><p class="sm">Editing a controlled value or conclusion reopens the applicable verification.</p></div></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> no real financial statement data is embedded.</div>
+<div class="page-head"><div><h3>Disclosures and notes</h3><p>Draft from verified facts while preserving qualified human review of accounting judgment.</p></div><button class="btn accent" id="noteDraftBtn">Draft synthetic note</button></div>
+<div class="grid g3"><div class="card"><h4>Source facts</h4><p class="sm">Award, contract, period, balance, and evidence state.</p></div><div class="card"><h4>Draft narrative</h4><p class="sm">Prepared from controlled public synthetic facts.</p></div><div class="card"><h4>Required review</h4><p class="sm">Finance Director and technical accountant.</p></div></div>
+<div class="note-preview hidden" id="notePreview"><div class="eyebrow">Draft Note 8 · Restricted Capital Activity</div><p>During the synthetic fiscal year, Pinehaven recognized $75,000 of restricted capital receipts and $28,000 of evidence-linked eligible project expenditures. A separate $6,800 operating-payroll proposal was excluded pending resolution of a purpose mismatch.</p><p class="micro-note">Public synthetic draft · management review required · not financial statements</p></div>
+<div class="demo-result" id="noteResult"><strong>Pending:</strong> no note has been drafted.</div>
 </section><section class="page" id="compliance">
-<div class="page-head"><div><h3>Georgia municipal compliance calendar</h3><p>Requirements are tracked by authoritative source, applicability trigger, responsible role, evidence state, and current official deadline.</p></div><button class="btn accent" data-demo="Synthetic compliance statuses refreshed">Refresh demonstration</button></div>
-<div class="table-wrap"><table><thead><tr><th>Generic Georgia municipal requirement</th><th>Trigger</th><th>Responsible role</th><th>Public demo state</th></tr></thead><tbody><tr><td>Annual financial reporting / audit submission</td><td>Applicability under current law and policy</td><td>Finance management</td><td><span class="chip info">Confirm official deadline</span></td></tr><tr><td>Report of Local Government Finances</td><td>Applicable local government</td><td>Finance / clerk</td><td><span class="chip info">Source-linked</span></td></tr><tr><td>Government Management Indicators</td><td>Current state reporting cycle</td><td>Clerk / manager</td><td><span class="chip info">Source-linked</span></td></tr><tr><td>Single Audit and SEFA readiness</td><td>Applicable federal award activity</td><td>Finance / grant owners</td><td><span class="chip warn">Conditional</span></td></tr></tbody></table></div>
-<div class="banner warn"><strong>Public limitation:</strong> production deadlines and applicability must be refreshed from current official sources for the municipality.</div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> illustrative calendar only.</div>
+<div class="page-head"><div><h3>Georgia municipal compliance calendar</h3><p>Track applicability, responsible role, evidence state, and current official deadline.</p></div><button class="btn accent" id="complianceBtn">Run calendar check</button></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Requirements</span><b>4</b></div><div class="priority-stat"><span class="muted xs">Ready</span><b id="complianceReady">0</b></div><div class="priority-stat"><span class="muted xs">Due soon</span><b id="complianceDue">0</b></div><div class="priority-stat"><span class="muted xs">Conditional</span><b id="complianceConditional">0</b></div></div>
+<div class="table-wrap"><table><thead><tr><th>Requirement</th><th>Owner</th><th>Evidence</th><th>Status</th></tr></thead><tbody>
+  <tr data-compliance="ready"><td>Annual financial reporting package</td><td>Finance management</td><td>Close schedules linked</td><td><span class="chip neutral compliance-state">PENDING</span></td></tr>
+  <tr data-compliance="ready"><td>Local government finance report</td><td>Finance / clerk</td><td>Reporting population linked</td><td><span class="chip neutral compliance-state">PENDING</span></td></tr>
+  <tr data-compliance="due"><td>Management indicators</td><td>Clerk / manager</td><td>Owner assigned</td><td><span class="chip neutral compliance-state">PENDING</span></td></tr>
+  <tr data-compliance="conditional"><td>Single Audit / SEFA readiness</td><td>Finance / grant owner</td><td>Threshold evaluation required</td><td><span class="chip neutral compliance-state">PENDING</span></td></tr>
+</tbody></table></div><div class="demo-result" id="complianceResult"><strong>Pending:</strong> applicability and evidence states have not been evaluated.</div>
 </section><section class="page" id="intake">
-<div class="page-head"><div><h3>Document intake</h3><p>Authorities, awards, contracts, invoices, payroll support, and other records enter a controlled evidence registry with provenance and verification state.</p></div><button class="btn accent" data-demo="Synthetic document intake package prepared">Simulate document intake</button></div>
-<div class="chain"><div class="chain-node"><span>1</span><b>Receive</b><small>Preserve original evidence</small></div><div class="chain-node"><span>2</span><b>Extract</b><small>Propose facts and dates</small></div><div class="chain-node"><span>3</span><b>Verify</b><small>Required role confirms facts</small></div><div class="chain-node"><span>4</span><b>Connect</b><small>Link the Economic Event ID</small></div><div class="chain-node"><span>5</span><b>Retain</b><small>Preserve lineage and history</small></div></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> the browser does not upload files.</div>
+<div class="page-head"><div><h3>Document intake</h3><p>Preserve originals, extract facts, verify authority, and connect Economic Event IDs.</p></div><button class="btn accent" id="intakeBtn">Process synthetic document packet</button></div>
+<div class="table-wrap"><table><thead><tr><th>Document</th><th>Extracted facts</th><th>Confidence</th><th>Registry state</th></tr></thead><tbody>
+  <tr><td>PH-AWARD-019.pdf</td><td id="intakeAward">Not extracted</td><td><span class="chip neutral intake-confidence">PENDING</span></td><td><span class="chip neutral intake-state">PENDING</span></td></tr>
+  <tr><td>PH-CONTRACT-119.pdf</td><td id="intakeContract">Not extracted</td><td><span class="chip neutral intake-confidence">PENDING</span></td><td><span class="chip neutral intake-state">PENDING</span></td></tr>
+  <tr><td>PH-INVOICE-00427.pdf</td><td id="intakeInvoice">Not extracted</td><td><span class="chip neutral intake-confidence">PENDING</span></td><td><span class="chip neutral intake-state">PENDING</span></td></tr>
+</tbody></table></div><div class="demo-result" id="intakeResult"><strong>Pending:</strong> browser simulation does not upload files; it reveals a fixed synthetic intake result.</div>
 </section><section class="page" id="registry">
-<div class="page-head"><div><h3>Municipal knowledge registry</h3><p>Long-lived authority and institutional knowledge remain available across fiscal years without treating stale labels as accounting policy.</p></div><button class="btn accent" data-demo="Synthetic evidence relationships displayed">Explore public example</button></div>
-<div class="grid g3"><div class="card"><h4>Authority and effective period</h4><p class="sm">Referenda, awards, contracts, debt, leases, and policies remain effective-dated.</p></div><div class="card"><h4>Evidence provenance</h4><p class="sm">Original source, approval state, and lineage are preserved.</p></div><div class="card"><h4>Cross-year continuity</h4><p class="sm">Prior evidence may support a later period; later evidence never rewrites the past silently.</p></div></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> conceptual relationships only; no private registry or implementation object is embedded.</div>
+<div class="page-head"><div><h3>Municipal knowledge registry</h3><p>Long-lived authority remains effective-dated and reusable across fiscal years.</p></div><button class="btn accent" id="registryBtn">Query synthetic authority</button></div>
+<div class="control-strip"><label for="registrySelect">Authority type</label><select id="registrySelect"><option value="referendum">Restricted-fund authority</option><option value="award">Federal award</option><option value="contract">Service contract</option><option value="debt">Debt instrument</option></select></div>
+<div class="table-wrap"><table><thead><tr><th>Authority</th><th>Effective period</th><th>Supported purpose</th><th>Current state</th></tr></thead><tbody id="registryBody"><tr><td colspan="4">Select an authority type and run the query.</td></tr></tbody></table></div><div class="demo-result" id="registryResult"><strong>Ready:</strong> query an effective-dated Pinehaven authority record.</div>
 </section><section class="page" id="verification">
-  <div class="page-head"><div><h3>Role-based approval and segregation of duties</h3><p>Approval authority follows role and responsibility - not system access alone.</p></div><span class="chip info">Public control simulation</span></div>
-  <div class="banner"><strong>Economic Event ID:</strong> <span class="mono">PH-EVT-2026-00427</span>  |  Pinehaven fleet-maintenance invoice  |  <strong>$4,275.00</strong></div>
-  <div class="priority-grid">
-    <div class="priority-stat"><span class="muted xs">Preparer</span><b>Finance Preparer</b><span class="chip neutral">Fictional role</span></div>
-    <div class="priority-stat"><span class="muted xs">Required approver</span><b>Finance Director</b><span class="chip neutral">Fictional role</span></div>
-    <div class="priority-stat"><span class="muted xs">Payload</span><b>Invoice · $4,275.00</b><span class="chip info">Synthetic</span></div>
-    <div class="priority-stat"><span class="muted xs">Posting mode</span><b>Dry run only</b><span class="chip warn">No system access</span></div>
-  </div>
-  <div class="state-sequence">
-    <div class="state-box"><small>Preparation</small><strong id="sodPrepState">PENDING</strong></div>
-    <div class="state-box"><small>Role verification</small><strong id="sodRoleState">PENDING</strong></div>
-    <div class="state-box"><small>SOD control</small><strong id="sodCheckState">PENDING</strong></div>
-    <div class="state-box"><small>Approval</small><strong id="sodApprovalState">NOT APPROVED</strong></div>
-  </div>
-  <div class="action-row">
-    <button class="btn danger" id="selfApproveBtn">Attempt self-approval</button>
-    <button class="btn accent" id="authorizedApproveBtn">Approve as required role</button>
-    <button class="btn secondary" id="dryRunBtn" disabled>Send to dry-run posting gate</button>
-    <button class="btn secondary" id="reuseAuthBtn" disabled>Attempt authorization reuse</button>
-    <button class="btn secondary" id="changePayloadBtn" disabled>Change approved payload</button>
-  </div>
-  <div class="demo-result" id="sodResult"><strong>Ready:</strong> choose a control path. Approval remains separate from posting.</div>
-  <div class="auth-card hidden" id="authCard">
-    <div class="muted xs" style="color:#a8dbe2">PUBLIC DEMO AUTHORIZATION - HARMLESS DISPLAY ID</div>
-    <h4 style="color:#fff;margin:6px 0"><code>DEMO-APR-PH-00427-X8K2</code></h4>
-    <div class="table-wrap" style="background:transparent;border-color:rgba(255,255,255,.18)"><table><tbody>
-      <tr><td>Economic event</td><td>PH-EVT-2026-00427</td><td>Payload</td><td>Invoice · $4,275.00</td></tr>
-      <tr><td>Required role</td><td>Finance Director</td><td>Approved state</td><td>APPROVED_NOT_POSTED</td></tr>
-      <tr><td>Permitted use</td><td>One public dry-run only</td><td>Use state</td><td id="authUseState">UNUSED</td></tr>
-    </tbody></table></div>
-    <p class="micro-note" style="color:#cce5eb">Conceptual binding only. This public page contains no real token, security, credential, posting, or ERP implementation.</p>
-  </div>
-  <div class="banner warn"><strong>Control boundary:</strong> PREPARED → ROLE VERIFIED → SOD PASSED → APPROVED_NOT_POSTED → separate dry-run service. No QuickBooks or other ERP connection exists in this demo.</div>
+<div class="page-head"><div><h3>Role-based approval and authorization usage</h3><p>Approval authority follows role and responsibility—not system access alone.</p></div><span class="chip info">Public control simulation</span></div>
+<div class="banner"><strong>Economic Event:</strong> PH-EVT-2026-00427 · Pinehaven fleet-maintenance invoice · <strong>$4,275</strong></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Authorizations issued</span><b id="tokenIssued">0</b></div><div class="priority-stat"><span class="muted xs">Consumed</span><b id="tokenUsed">0</b></div><div class="priority-stat"><span class="muted xs">Rejected attempts</span><b id="tokenRejected">0</b></div><div class="priority-stat"><span class="muted xs">Active</span><b id="tokenActive">0</b></div></div>
+<div class="state-sequence"><div class="state-box"><small>Preparation</small><strong id="sodPrepState">PENDING</strong></div><div class="state-box"><small>Role verification</small><strong id="sodRoleState">PENDING</strong></div><div class="state-box"><small>SOD control</small><strong id="sodCheckState">PENDING</strong></div><div class="state-box"><small>Approval</small><strong id="sodApprovalState">NOT APPROVED</strong></div></div>
+<div class="action-row"><button class="btn danger" id="selfApproveBtn">Attempt self-approval</button><button class="btn accent" id="authorizedApproveBtn">Approve as Finance Director</button><button class="btn secondary" id="dryRunBtn" disabled>Consume in dry-run service</button><button class="btn secondary" id="reuseAuthBtn" disabled>Attempt reuse</button><button class="btn secondary" id="changePayloadBtn" disabled>Change payload</button></div>
+<div class="demo-result" id="sodResult"><strong>Ready:</strong> test a blocked or authorized path.</div>
+<div class="auth-card hidden" id="authCard"><div class="muted xs" style="color:#a8dbe2">PUBLIC DEMO AUTHORIZATION</div><h4><code>DEMO-APR-PH-00427-X8K2</code></h4><div class="table-wrap"><table><tbody><tr><td>Event</td><td>PH-EVT-2026-00427</td><td>Payload</td><td>Invoice · $4,275</td></tr><tr><td>Role</td><td>Finance Director</td><td>State</td><td>APPROVED_NOT_POSTED</td></tr><tr><td>Permitted use</td><td>One dry run</td><td>Use state</td><td id="authUseState">UNUSED</td></tr></tbody></table></div></div>
 </section><section class="page" id="technical">
-<div class="page-head"><div><h3>Ask Accountant / technical review</h3><p>Evidence-backed accounting questions can be assembled into focused review packages while management responsibility remains separate from the independent audit.</p></div><button class="btn accent" data-demo="Synthetic accounting question added to review queue">Add synthetic question</button></div>
-<div class="grid g3"><div class="card"><h4>Routine review</h4><p class="sm">Prepared items can be batched for efficient management-side technical review.</p></div><div class="card"><h4>Urgent exception</h4><p class="sm">Material or time-sensitive issues can be escalated immediately.</p></div><div class="card"><h4>Capacity gap</h4><p class="sm">The system identifies when no appropriately qualified reviewer is assigned.</p></div></div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> no message is sent and no external reviewer is contacted.</div>
+<div class="page-head"><div><h3>Ask Accountant / technical review</h3><p>Assemble focused, evidence-backed questions for the appropriately qualified reviewer.</p></div><button class="btn accent" id="technicalBtn">Create synthetic review package</button></div>
+<div class="priority-grid"><div class="priority-stat"><span class="muted xs">Question</span><b>Grant recognition</b></div><div class="priority-stat"><span class="muted xs">Amount</span><b>$75,000</b></div><div class="priority-stat"><span class="muted xs">Evidence</span><b id="technicalEvidence">0 / 5</b></div><div class="priority-stat"><span class="muted xs">Queue state</span><b id="technicalState">NOT CREATED</b></div></div>
+<div class="table-wrap hidden" id="technicalPackage"><table><thead><tr><th>Question</th><th>Facts attached</th><th>Required reviewer</th><th>State</th></tr></thead><tbody><tr><td>Recognition and restricted classification for PH-FA-2025-019</td><td>Award, receipt, project, expenditures, draft SEFA</td><td>Governmental accounting reviewer</td><td><span class="chip warn">REVIEW REQUIRED</span></td></tr></tbody></table></div><div class="demo-result" id="technicalResult"><strong>Pending:</strong> no review package has been assembled.</div>
 </section><section class="page" id="audit">
-  <div class="page-head"><div><h3>Evidence lineage and audit support</h3><p>One Economic Event ID connects authority, source, bank, ERP, classification, approval, and reporting.</p></div><button class="btn accent" id="traceEventBtn">Reveal evidence package</button></div>
-  <div class="banner"><strong>Economic Event ID:</strong> <span class="mono">PH-EVT-2026-00427</span>  |  Pinehaven fleet-maintenance invoice  |  $4,275.00</div>
-  <div class="chain" id="lineageChain">
-    <div class="chain-node lineage-step"><span>1</span><b>Authority</b><small>PH-AUTH-042</small></div><div class="chain-node lineage-step"><span>2</span><b>Contract</b><small>PH-CONT-119</small></div><div class="chain-node lineage-step"><span>3</span><b>Invoice</b><small>PH-INV-00427</small></div><div class="chain-node lineage-step"><span>4</span><b>Bank evidence</b><small>PH-BANK-00427</small></div><div class="chain-node lineage-step"><span>5</span><b>ERP event</b><small>PH-ERP-00427</small></div><div class="chain-node lineage-step"><span>6</span><b>Classification</b><small>General · Public Works</small></div><div class="chain-node lineage-step"><span>7</span><b>Approval</b><small>Required-role state</small></div><div class="chain-node lineage-step"><span>8</span><b>Reporting</b><small>PH-RPT-0427</small></div>
-  </div>
-  <div class="demo-result" id="lineageResult"><strong>Package collapsed:</strong> select Reveal evidence package to display the synthetic chain.</div>
-  <div class="table-wrap hidden" id="lineagePackage"><table><thead><tr><th>Stage</th><th>Evidence object</th><th>Connection</th><th>State</th></tr></thead><tbody>
-    <tr><td>Authority / contract</td><td>PH-AUTH-042 · PH-CONT-119</td><td>Permitted fleet maintenance</td><td><span class="chip good">LINKED</span></td></tr>
-    <tr><td>Source / cash</td><td>PH-INV-00427 · PH-BANK-00427</td><td>$4,275.00 payment evidence</td><td><span class="chip good">LINKED</span></td></tr>
-    <tr><td>ERP / classification</td><td>PH-ERP-00427</td><td>General · Public Works</td><td><span class="chip good">LINKED</span></td></tr>
-    <tr><td>Approval / reporting</td><td>DEMO-APR-PH-00427-X8K2 · PH-RPT-0427</td><td>Required-role state and output</td><td><span class="chip info">PUBLIC DEMO</span></td></tr>
-  </tbody></table></div>
+<div class="page-head"><div><h3>Evidence lineage and audit support</h3><p>One Economic Event ID connects authority, source, bank, ERP, classification, approval, and reporting.</p></div><button class="btn accent" id="traceEventBtn">Reveal evidence package</button></div>
+<div class="banner"><strong>Economic Event:</strong> PH-EVT-2026-00427 · $4,275 fleet-maintenance invoice</div>
+<div class="chain"><div class="chain-node lineage-step"><span>1</span><b>Authority</b><small>PH-AUTH-042</small></div><div class="chain-node lineage-step"><span>2</span><b>Contract</b><small>PH-CONT-119</small></div><div class="chain-node lineage-step"><span>3</span><b>Invoice</b><small>PH-INV-00427</small></div><div class="chain-node lineage-step"><span>4</span><b>Bank</b><small>PH-BANK-00427</small></div><div class="chain-node lineage-step"><span>5</span><b>ERP</b><small>PH-ERP-00427</small></div><div class="chain-node lineage-step"><span>6</span><b>Classification</b><small>General · Public Works</small></div><div class="chain-node lineage-step"><span>7</span><b>Approval</b><small>Required role</small></div><div class="chain-node lineage-step"><span>8</span><b>Reporting</b><small>PH-RPT-0427</small></div></div>
+<div class="demo-result" id="lineageResult"><strong>Package collapsed:</strong> reveal the synthetic chain.</div><div class="table-wrap hidden" id="lineagePackage"><table><thead><tr><th>Stage</th><th>Evidence object</th><th>Connection</th><th>State</th></tr></thead><tbody><tr><td>Authority / contract</td><td>PH-AUTH-042 · PH-CONT-119</td><td>Permitted fleet maintenance</td><td><span class="chip good">LINKED</span></td></tr><tr><td>Source / cash</td><td>PH-INV-00427 · PH-BANK-00427</td><td>$4,275 payment evidence</td><td><span class="chip good">LINKED</span></td></tr><tr><td>ERP / reporting</td><td>PH-ERP-00427 · PH-RPT-0427</td><td>General · Public Works</td><td><span class="chip good">LINKED</span></td></tr></tbody></table></div>
 </section><section class="page" id="reports">
-<div class="page-head"><div><h3>Report library</h3><p>Public-safe examples show the kinds of outputs MFCL can assemble without embedding client workbooks, implementation objects, or transaction files.</p></div><button class="btn accent" data-demo="Synthetic report preview opened">Preview synthetic report</button></div>
-<div class="grid g3"><div class="card"><h4>Fund and department views</h4><p class="sm">General, enterprise, restricted-capital, police, fire, public works, and recreation presentations.</p></div><div class="card"><h4>Close and audit support</h4><p class="sm">Cash, interfund, payroll, capital, debt, grant, and compliance schedules.</p></div><div class="card"><h4>SEFA and evidence lineage</h4><p class="sm">Management-prepared federal expenditure population linked to supporting evidence.</p></div></div>
-<div class="banner warn"><strong>Public boundary:</strong> downloadable private data packages and embedded implementation objects have been removed.</div>
-<div class="banner" data-demo-result><strong>Demonstration state:</strong> presentation preview only.</div>
+<div class="page-head"><div><h3>Report library</h3><p>Generate synthetic management outputs from the controlled demonstration state.</p></div><button class="btn accent" id="reportBtn">Generate report preview</button></div>
+<div class="control-strip"><label for="reportSelect">Report</label><select id="reportSelect"><option value="fund">Fund balance summary</option><option value="department">Department budget vs actual</option><option value="grant">Grant expenditure / SEFA support</option><option value="exceptions">Close exception queue</option></select></div>
+<div class="table-wrap"><table><thead id="reportHead"><tr><th>Selection</th><th>Status</th></tr></thead><tbody id="reportBody"><tr><td>Select a report</td><td><span class="chip neutral">NOT GENERATED</span></td></tr></tbody></table></div><div class="demo-result" id="reportResult"><strong>Ready:</strong> choose and generate a synthetic report preview.</div>
 </section></div>
 </main>
 </div>
 <div class="toast" id="toast"></div>
-<script id="mfcl-public-priority-script">
+<script id="mfcl-public-v2-script">
 (() => {
   'use strict';
-  const byId = id => document.getElementById(id);
-  const toast = byId('toast');
-  const notify = message => {
-    if (!toast) return;
-    toast.textContent = message;
-    toast.classList.add('show');
-    window.clearTimeout(window.__mfclToast);
-    window.__mfclToast = window.setTimeout(() => toast.classList.remove('show'), 2400);
-  };
-  const setChip = (element, text, tone) => {
-    if (!element) return;
-    element.textContent = text;
-    element.className = 'chip ' + tone;
-  };
-  const setResult = (element, html, tone = '') => {
-    if (!element) return;
-    element.innerHTML = html;
-    element.className = 'demo-result' + (tone ? ' ' + tone : '');
-  };
+  const $ = id => document.getElementById(id);
+  const money = n => '$' + Number(n).toLocaleString('en-US',{maximumFractionDigits:0});
+  const toastEl = $('toast');
+  const notify = message => { if(!toastEl) return; toastEl.textContent=message; toastEl.classList.add('show'); clearTimeout(window.__mfclToast); window.__mfclToast=setTimeout(()=>toastEl.classList.remove('show'),2500); };
+  const chip = (el,text,tone) => { if(!el) return; el.textContent=text; el.className='chip '+tone; };
+  const result = (el,content,tone='') => { if(!el) return; el.innerHTML=content; el.className='demo-result'+(tone?' '+tone:''); };
+  const pages=[...document.querySelectorAll('.page')], nav=[...document.querySelectorAll('.nav-btn[data-page]')], pageTitle=$('pageTitle');
+  const showPage=id=>{const target=$(id);if(!target)return;pages.forEach(p=>p.classList.toggle('active',p===target));nav.forEach(b=>b.classList.toggle('active',b.dataset.page===id));const active=nav.find(b=>b.dataset.page===id);if(pageTitle)pageTitle.textContent=active?active.textContent.trim():'MFCL';window.scrollTo(0,0)};
+  nav.forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page))); document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));
+  let demoControls=0; const markControl=()=>{demoControls++; $('ovEvents').textContent=String(128+demoControls*3); $('ovExceptions').textContent=String(Math.max(1,4-demoControls));};
 
-  const pages = [...document.querySelectorAll('.page')];
-  const navButtons = [...document.querySelectorAll('.nav-btn[data-page]')];
-  const title = byId('pageTitle');
-  function showPage(id) {
-    const target = byId(id);
-    if (!target) return;
-    pages.forEach(page => page.classList.toggle('active', page === target));
-    navButtons.forEach(button => button.classList.toggle('active', button.dataset.page === id));
-    const active = navButtons.find(button => button.dataset.page === id);
-    if (title) title.textContent = active ? active.textContent.trim() : 'Municipal Finance Control Layer';
-    window.scrollTo(0, 0);
-  }
-  navButtons.forEach(button => button.addEventListener('click', () => showPage(button.dataset.page)));
-  document.querySelectorAll('[data-go]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.go)));
-  document.querySelectorAll('[data-demo]').forEach(button => button.addEventListener('click', () => {
-    const page = button.closest('.page');
-    const result = page ? page.querySelector('[data-demo-result]') : null;
-    if (result) result.innerHTML = '<strong>Public synthetic result:</strong> ' + button.dataset.demo + '. No external system or data was accessed.';
-    button.disabled = true;
-    notify(button.dataset.demo + '.');
-  }));
+  $('guidedDemoBtn').addEventListener('click',e=>{ $('ovSources').textContent='6 / 6'; chip($('ovSourcesState'),'CONNECTED','good'); $('ovEvents').textContent='128'; $('ovExceptions').textContent='4'; result($('overviewResult'),'<strong>Pinehaven close initialized:</strong> six source families connected, 128 synthetic events normalized, and four exceptions routed. Open each workspace to resolve or control them.','approved'); e.currentTarget.disabled=true; notify('Pinehaven synthetic close initialized.'); });
+  $('syncBtn').addEventListener('click',e=>{ $('syncCount').textContent='17'; $('syncDupes').textContent='2'; $('syncWatermark').textContent='09:30:00'; $('qbdDelta').textContent='9'; $('utilityDelta').textContent='5'; $('evidenceDelta').textContent='3'; document.querySelectorAll('.sync-state').forEach(x=>chip(x,'COMPLETE','good')); result($('syncResult'),'<strong>Incremental pull complete:</strong> 17 changes accepted, 2 duplicate deliveries blocked, and the source watermark advanced. No source system was changed.','approved'); e.currentTarget.disabled=true; markControl(); notify('17 synthetic source changes normalized.'); });
 
-  let approved = false;
-  let used = false;
-  byId('selfApproveBtn')?.addEventListener('click', () => {
-    byId('sodPrepState').textContent = 'PREPARED';
-    byId('sodRoleState').textContent = 'ROLE CONFLICT';
-    byId('sodCheckState').textContent = 'BLOCKED';
-    byId('sodApprovalState').textContent = 'NOT APPROVED';
-    setResult(byId('sodResult'), '<strong>BLOCKED - SEGREGATION OF DUTIES:</strong> the Finance Preparer cannot approve its own proposed transaction.', 'blocked');
-    notify('Self-approval blocked by segregation of duties.');
-  });
-  byId('authorizedApproveBtn')?.addEventListener('click', () => {
-    approved = true; used = false;
-    byId('sodPrepState').textContent = 'PREPARED';
-    byId('sodRoleState').textContent = 'ROLE VERIFIED';
-    byId('sodCheckState').textContent = 'SOD PASSED';
-    byId('sodApprovalState').textContent = 'APPROVED_NOT_POSTED';
-    byId('authCard').classList.remove('hidden');
-    byId('authUseState').textContent = 'UNUSED';
-    byId('dryRunBtn').disabled = false;
-    byId('reuseAuthBtn').disabled = true;
-    byId('changePayloadBtn').disabled = false;
-    setResult(byId('sodResult'), '<strong>PREPARED → ROLE VERIFIED → SOD PASSED → APPROVED:</strong> authorization is scoped to this fictional event and payload. Approval did not post anything.', 'approved');
-    notify('Required-role approval completed; posting remains separate.');
-  });
-  byId('dryRunBtn')?.addEventListener('click', () => {
-    if (!approved) return;
-    used = true;
-    byId('authUseState').textContent = 'USED - DRY RUN';
-    byId('dryRunBtn').disabled = true;
-    byId('reuseAuthBtn').disabled = false;
-    setResult(byId('sodResult'), '<strong>DRY RUN COMPLETE:</strong> the display authorization was accepted once by the fictional posting gate. No ERP or external service was contacted.', 'approved');
-    notify('Public dry run complete; no external action occurred.');
-  });
-  byId('reuseAuthBtn')?.addEventListener('click', () => {
-    if (!used) return;
-    setResult(byId('sodResult'), '<strong>REJECTED - AUTHORIZATION ALREADY USED:</strong> the one-use public demo authorization cannot be replayed.', 'blocked');
-    notify('Authorization reuse rejected.');
-  });
-  byId('changePayloadBtn')?.addEventListener('click', () => {
-    if (!approved) return;
-    byId('sodApprovalState').textContent = 'REAPPROVAL REQUIRED';
-    setResult(byId('sodResult'), '<strong>REJECTED - PAYLOAD CHANGED:</strong> a changed amount, account, or event payload invalidates the prior approval state.', 'blocked');
-    notify('Changed payload requires new approval.');
-  });
+  let revenueProcessed=false, revenueCorrected=false, revenueToken=false;
+  $('processRevenueBtn').addEventListener('click',e=>{revenueProcessed=true;document.querySelectorAll('.revenue-state').forEach(x=>chip(x,'ROUTED','good'));chip($('splostRevenueStatus'),'RESTRICTED BANK HOLD','bad');result($('revenueResult'),'<strong>Batch controlled:</strong> $59,935 routine receipts routed; $75,000 restricted receipt held because its destination conflicts with purpose.','blocked');e.currentTarget.disabled=true;markControl();notify('Cashier batch split into routine and restricted populations.');});
+  $('correctDestinationBtn').addEventListener('click',()=>{if(!revenueProcessed){notify('Process the cashier batch first.');return;}revenueCorrected=true;$('splostDestination').textContent='Restricted capital bank';chip($('splostRevenueStatus'),'ROLE APPROVAL REQUIRED','warn');$('restrictedPayload').textContent='$75,000 awaiting approval';result($('revenueResult'),'<strong>Destination corrected:</strong> restricted receipt remains excluded from the routine authorization until required-role approval.','approved');notify('Restricted destination corrected; approval still required.');});
+  const tokenStats={issued:0,used:0,rejected:0,active:0}; const refreshTokenStats=()=>{['Issued','Used','Rejected','Active'].forEach(k=>{const el=$('token'+k);if(el)el.textContent=String(tokenStats[k.toLowerCase()]);});};
+  $('issueTokenBtn').addEventListener('click',()=>{if(!revenueProcessed){notify('Process the cashier batch first.');return;}revenueToken=true;tokenStats.issued++;tokenStats.active++;refreshTokenStats();$('tokenState').textContent='ACTIVE · ROUTINE ONLY';$('revenueTokenDisplay').classList.remove('hidden');$('revenueTokenDisplay').innerHTML='<strong>DEMO-REV-PH-059935-Q4M7</strong><br>Bound to routine payload $59,935 · Pinehaven General/Water destinations · one dry-run use · restricted $75,000 excluded.';result($('revenueResult'),'<strong>Scoped authorization issued:</strong> agents did not create it; the exact routine payload is authorized once.','approved');notify('One-use routine authorization issued.');});
+  $('postRevenueBtn').addEventListener('click',()=>{if(!revenueToken){tokenStats.rejected++;refreshTokenStats();notify('No active scoped authorization.');return;}revenueToken=false;tokenStats.used++;tokenStats.active--;refreshTokenStats();$('tokenState').textContent='CONSUMED';$('routinePayload').textContent='$59,935 dry-run accepted';$('revenueTokenDisplay').innerHTML='<strong>AUTHORIZATION CONSUMED</strong><br>Exact routine payload accepted by a fictional posting service · restricted receipt excluded · no live write.';result($('revenueResult'),'<strong>Dry run complete:</strong> routine payload accepted once; restricted item remains approval-pending.','approved');markControl();notify('Dry-run posting service consumed the authorization.');});
 
-  byId('bankReconBtn')?.addEventListener('click', event => {
-    document.querySelectorAll('[data-bank-state]').forEach(row => {
-      const state = row.dataset.bankState;
-      const tone = state === 'MATCHED' ? 'good' : state === 'EXCEPTION' ? 'bad' : 'warn';
-      setChip(row.querySelector('.bank-status'), state, tone);
-    });
-    byId('bankPending').textContent = '0'; byId('bankMatched').textContent = '2';
-    byId('bankControlled').textContent = '2'; byId('bankException').textContent = '1';
-    setResult(byId('bankResult'), '<strong>Controlled disposition complete:</strong> 2 matched, 1 timing item, 1 fee, and 1 exception. Card settlement reconciled as $5,000 gross - $150 fee = $4,850 net.', 'approved');
-    event.currentTarget.disabled = true;
-    notify('Five synthetic bank rows dispositioned.');
-  });
+  $('bankReconBtn').addEventListener('click',e=>{document.querySelectorAll('[data-bank-state]').forEach(row=>{const s=row.dataset.bankState;chip(row.querySelector('.bank-status'),s,s==='MATCHED'?'good':s==='EXCEPTION'?'bad':'warn')});$('bankPending').textContent='0';$('bankMatched').textContent='2';$('bankControlled').textContent='2';$('bankException').textContent='1';result($('bankResult'),'<strong>Disposition complete:</strong> 2 matched, 1 timing item, 1 fee, 1 exception. Card settlement ties $5,000 gross - $150 fee = $4,850 net.','approved');e.currentTarget.disabled=true;markControl();notify('Five validated bank rows dispositioned.');});
+  $('integrityCaseBtn').addEventListener('click',e=>{document.querySelectorAll('.risk-chip').forEach((x,i)=>chip(x,i===0?'POTENTIAL DUPLICATE':i===1?'SUPPORT MISSING':'SEQUENCE EXCEPTION',i===0?'warn':'bad'));$('riskEvidence').textContent='3 / 4';$('riskIndicators').textContent='3';$('riskState').textContent='AUTHORIZED REVIEW';result($('integrityResult'),'<strong>Review case PH-CASE-014 created:</strong> three indicators linked; the missing invoice remains an evidence request, not a fraud conclusion.','blocked');e.currentTarget.disabled=true;markControl();notify('Synthetic anomaly routed to authorized review.');});
+  $('splostControlBtn').addEventListener('click',e=>{chip($('splostPassStatus'),'CONTROL PASSED','good');chip($('splostFailStatus'),'HOLD - PURPOSE MISMATCH','bad');$('splostPassRoute').innerHTML='<span class="chip warn">REQUIRED-ROLE APPROVAL</span>';$('splostFailRoute').innerHTML='<span class="chip bad">NOT ROUTED</span>';result($('splostResult'),'<strong>1 passed / 1 held:</strong> capital improvement advances; routine payroll remains held.','approved');e.currentTarget.disabled=true;markControl();notify('Restricted-purpose controls evaluated.');});
+  $('interfundSettlementBtn').addEventListener('click',e=>{$('ifDueFrom').textContent='$0';$('ifDueTo').textContent='$0';$('ifCashState').textContent='SETTLED';result($('interfundResult'),'<strong>Settlement complete:</strong> $3,200 reciprocal cash movement clears both balances without creating a second expense.','approved');e.currentTarget.disabled=true;markControl();notify('Reciprocal balances cleared.');});
+  $('spendControlBtn').addEventListener('click',e=>{chip($('p2pRoutine'),'READY FOR APPROVAL','good');chip($('p2pRestricted'),'HOLD - AUTHORITY','bad');chip($('p2pCard'),'HOLD - RECEIPT','bad');result($('p2pTokenPanel'),'<strong>Authorization candidate:</strong> routine $4,800 invoice only · exact event, coding, company, and amount · not yet approved.','approved');e.currentTarget.disabled=true;markControl();notify('Spend controls completed.');});
+  $('tamperTokenBtn').addEventListener('click',()=>{tokenStats.rejected++;refreshTokenStats();result($('p2pTokenPanel'),'<strong>AUTHORIZATION INVALID:</strong> changed amount/coding differs from approved scope. Dry-run write denied and review reopened.','blocked');notify('Changed purchase payload rejected.');});
 
-  byId('splostControlBtn')?.addEventListener('click', event => {
-    setChip(byId('splostPassStatus'), 'CONTROL PASSED', 'good');
-    setChip(byId('splostFailStatus'), 'HOLD - PURPOSE MISMATCH', 'bad');
-    byId('splostPassRoute').innerHTML = '<span class="chip warn">REQUIRED-ROLE APPROVAL</span>';
-    byId('splostFailRoute').innerHTML = '<span class="chip bad">NOT ROUTED</span>';
-    setResult(byId('splostResult'), '<strong>1 passed / 1 held:</strong> the aligned capital purpose advances to required-role approval; the operating-payroll purpose remains on hold.', 'approved');
-    event.currentTarget.disabled = true;
-    notify('Restricted-purpose controls evaluated.');
-  });
+  let payrollVerifiedValue=60; const updatePayroll=()=>{const pct=Number($('payrollRange').value), water=100-pct;$('payrollPct').textContent=pct+'%';$('payrollGF').textContent=money(pct*100);$('payrollWater').textContent=money(water*100);$('payrollTie').textContent='$10,000 ✓';const changed=pct!==payrollVerifiedValue;$('payrollProposed').textContent=changed?pct+'% / '+water+'%':'None';$('payrollVerifyBtn').disabled=!changed;if(changed){$('payrollChangeKpi').textContent='1';chip($('payrollChangeState'),'REVERIFY','warn');result($('payrollPanel'),'<strong>HOLD:</strong> funding relationship changed to '+pct+'% / '+water+'%. Verify authority, evidence, and effective date before the new rule can run.','blocked');}};
+  $('payrollRange').addEventListener('input',updatePayroll); $('payrollChangeBtn').addEventListener('click',()=>{$('payrollRange').value='70';updatePayroll();notify('70% / 30% allocation proposed; verification reopened.');});
+  $('payrollVerifyBtn').addEventListener('click',()=>{payrollVerifiedValue=Number($('payrollRange').value);chip($('payrollChangeState'),'VERIFIED','good');$('payrollVerifyBtn').disabled=true;result($('payrollPanel'),'<strong>Changed rule verified:</strong> '+payrollVerifiedValue+'% General / '+(100-payrollVerifiedValue)+'% Water is effective for this synthetic payroll only.','approved');markControl();notify('Changed payroll allocation verified.');});
+  $('payrollRunBtn').addEventListener('click',()=>{const pct=Number($('payrollRange').value);if(pct!==payrollVerifiedValue){result($('payrollPanel'),'<strong>RUN BLOCKED:</strong> proposed payroll allocation has not completed role verification.','blocked');notify('Payroll run blocked by unverified funding change.');return;}updatePayroll();result($('payrollPanel'),'<strong>Allocation calculated:</strong> '+pct+'% General ('+money(pct*100)+') + '+(100-pct)+'% Water ('+money((100-pct)*100)+'). Interfund recognition is required if General pays centrally.','approved');markControl();notify('Synthetic payroll allocation calculated.');});
 
-  byId('interfundSettlementBtn')?.addEventListener('click', event => {
-    byId('ifDueFrom').textContent = '$0.00'; byId('ifDueTo').textContent = '$0.00';
-    byId('ifDivergence').textContent = '$0.00'; byId('ifCashState').textContent = 'SETTLED';
-    setResult(byId('interfundResult'), '<strong>Settlement complete:</strong> the $3,200.00 cash movement clears both reciprocal balances. The underlying centrally paid service remains a distinct recognition event.', 'approved');
-    event.currentTarget.disabled = true;
-    notify('Reciprocal interfund balances cleared in the simulation.');
-  });
+  const deptData={police:{budget:520000,actual:438600,rows:[['Salaries',350000,301000],['Operations',120000,98400],['Capital',50000,39200]]},fire:{budget:310000,actual:247900,rows:[['Salaries',180000,151400],['Operations',90000,70500],['Capital',40000,26000]]},streets:{budget:440000,actual:365200,rows:[['Salaries',210000,180600],['Operations',150000,129600],['Capital',80000,55000]]},recreation:{budget:175000,actual:132450,rows:[['Salaries',80000,65100],['Operations',65000,49350],['Capital',30000,18000]]}};
+  $('departmentRefreshBtn').addEventListener('click',()=>{const d=deptData[$('departmentSelect').value],avail=d.budget-d.actual;$('deptBudget').textContent=money(d.budget);$('deptActual').textContent=money(d.actual);$('deptAvailable').textContent=money(avail);$('deptStatus').textContent=(d.actual/d.budget*100).toFixed(1)+'% used';$('departmentBody').innerHTML=d.rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+money(r[1])+'</td><td>'+money(r[2])+'</td><td class="amount-good">'+money(r[1]-r[2])+'</td></tr>').join('');result($('departmentResult'),'<strong>Management view refreshed:</strong> departmental attribution does not create a separate legal fund or bank account.','approved');notify('Synthetic departmental report refreshed.');});
+  $('sefaAssembleBtn').addEventListener('click',e=>{document.querySelectorAll('[data-sefa]').forEach(row=>{const inc=row.dataset.sefa==='include';chip(row.querySelector('.sefa-state'),inc?'INCLUDED':'EXCLUDED',inc?'good':'bad')});$('sefaDraft').classList.remove('hidden');result($('sefaResult'),'<strong>Draft SEFA assembled:</strong> $25,650 eligible and evidence-linked; $925 excluded.','approved');e.currentTarget.disabled=true;markControl();notify('Synthetic SEFA assembled.');});
+  $('assemblyBtn').addEventListener('click',e=>{document.querySelectorAll('.assembly-state').forEach((x,i)=>chip(x,i<3?'COMPLETE':'HUMAN REVIEW',i<3?'good':'warn'));$('assemblyFunds').textContent='4 / 4';$('assemblyElims').textContent='3';$('assemblyOpen').textContent='1';$('assemblyStatus').textContent='DRAFT READY';result($('assemblyResult'),'<strong>Reporting package assembled:</strong> four fund statements and three reporting eliminations completed; one management review remains.','approved');e.currentTarget.disabled=true;markControl();notify('Synthetic financial package assembled.');});
+  $('noteDraftBtn').addEventListener('click',e=>{$('notePreview').classList.remove('hidden');result($('noteResult'),'<strong>Draft prepared:</strong> source facts and exclusions are visible; qualified human review remains required.','approved');e.currentTarget.disabled=true;markControl();notify('Synthetic disclosure drafted.');});
+  $('complianceBtn').addEventListener('click',e=>{document.querySelectorAll('[data-compliance]').forEach(row=>{const s=row.dataset.compliance;chip(row.querySelector('.compliance-state'),s==='ready'?'READY':s==='due'?'DUE SOON':'CONDITIONAL',s==='ready'?'good':'warn')});$('complianceReady').textContent='2';$('complianceDue').textContent='1';$('complianceConditional').textContent='1';result($('complianceResult'),'<strong>Calendar evaluated:</strong> 2 ready, 1 due soon, and 1 conditional requirement routed to its responsible role.','approved');e.currentTarget.disabled=true;markControl();notify('Synthetic compliance calendar evaluated.');});
+  $('intakeBtn').addEventListener('click',e=>{$('intakeAward').textContent='Agency, ALN, award period, pass-through';$('intakeContract').textContent='Scope, effective date, approval state';$('intakeInvoice').textContent='Vendor, date, amount $4,275, event ID';document.querySelectorAll('.intake-confidence').forEach((x,i)=>chip(x,i===1?'MEDIUM':'HIGH',i===1?'warn':'good'));document.querySelectorAll('.intake-state').forEach((x,i)=>chip(x,i===1?'VERIFY SIGNATURE':'REGISTERED',i===1?'warn':'good'));result($('intakeResult'),'<strong>Packet processed:</strong> two documents registered; one contract remains pending signature verification.','approved');e.currentTarget.disabled=true;markControl();notify('Synthetic documents indexed and routed.');});
+  const registryData={referendum:['PH-AUTH-SP-2024','2024-01-01 through expiration','Capital water and transportation projects','ACTIVE'],award:['PH-FA-2025-019','2025-07-01 to 2027-06-30','Eligible infrastructure expenditures','ACTIVE'],contract:['PH-CONT-119','2026-01-01 to 2026-12-31','Fleet maintenance services','ACTIVE'],debt:['PH-DEBT-007','2023-09-01 to maturity','Water-system capital financing','ACTIVE']};
+  $('registryBtn').addEventListener('click',()=>{const r=registryData[$('registrySelect').value];$('registryBody').innerHTML='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td><span class="chip good">'+r[3]+'</span></td></tr>';result($('registryResult'),'<strong>Authority located:</strong> effective-dated evidence is reusable across fiscal years without silently changing prior conclusions.','approved');notify('Synthetic authority record returned.');});
 
-  byId('sefaAssembleBtn')?.addEventListener('click', event => {
-    document.querySelectorAll('[data-sefa]').forEach(row => {
-      const include = row.dataset.sefa === 'include';
-      setChip(row.querySelector('.sefa-state'), include ? 'INCLUDED' : 'EXCLUDED', include ? 'good' : 'bad');
-    });
-    byId('sefaDraft').classList.remove('hidden');
-    setResult(byId('sefaResult'), '<strong>Draft SEFA assembled:</strong> $25,650.00 of evidence-linked eligible expenditures included; $925.00 ineligible item excluded.', 'approved');
-    event.currentTarget.disabled = true;
-    notify('Synthetic draft SEFA assembled.');
-  });
-
-  byId('traceEventBtn')?.addEventListener('click', event => {
-    document.querySelectorAll('.lineage-step').forEach(step => step.classList.add('linked'));
-    byId('lineagePackage').classList.remove('hidden');
-    setResult(byId('lineageResult'), '<strong>Evidence package linked:</strong> PH-EVT-2026-00427 connects eight synthetic evidence and reporting stages.', 'approved');
-    event.currentTarget.disabled = true;
-    notify('Synthetic evidence package revealed.');
-  });
-
-  showPage('overview');
+  let approved=false,used=false;
+  $('selfApproveBtn').addEventListener('click',()=>{$('sodPrepState').textContent='PREPARED';$('sodRoleState').textContent='ROLE CONFLICT';$('sodCheckState').textContent='BLOCKED';$('sodApprovalState').textContent='NOT APPROVED';tokenStats.rejected++;refreshTokenStats();result($('sodResult'),'<strong>BLOCKED - SEGREGATION OF DUTIES:</strong> preparer cannot approve its own work.','blocked');notify('Self-approval blocked.');});
+  $('authorizedApproveBtn').addEventListener('click',()=>{approved=true;used=false;$('sodPrepState').textContent='PREPARED';$('sodRoleState').textContent='ROLE VERIFIED';$('sodCheckState').textContent='SOD PASSED';$('sodApprovalState').textContent='APPROVED_NOT_POSTED';$('authCard').classList.remove('hidden');$('authUseState').textContent='UNUSED';$('dryRunBtn').disabled=false;$('reuseAuthBtn').disabled=true;$('changePayloadBtn').disabled=false;tokenStats.issued++;tokenStats.active++;refreshTokenStats();$('ovApproved').textContent='1';result($('sodResult'),'<strong>APPROVED_NOT_POSTED:</strong> one-use authorization bound to event, payload, role, period, and dry-run action.','approved');notify('Required-role approval completed.');});
+  $('dryRunBtn').addEventListener('click',()=>{if(!approved)return;used=true;$('authUseState').textContent='CONSUMED - DRY RUN';$('dryRunBtn').disabled=true;$('reuseAuthBtn').disabled=false;tokenStats.used++;tokenStats.active--;refreshTokenStats();result($('sodResult'),'<strong>DRY RUN COMPLETE:</strong> authorization consumed once; no ERP contacted.','approved');markControl();notify('Authorization consumed in dry run.');});
+  $('reuseAuthBtn').addEventListener('click',()=>{if(!used)return;tokenStats.rejected++;refreshTokenStats();result($('sodResult'),'<strong>REJECTED - AUTHORIZATION ALREADY USED:</strong> replay denied.','blocked');notify('Authorization reuse rejected.');});
+  $('changePayloadBtn').addEventListener('click',()=>{if(!approved)return;$('sodApprovalState').textContent='REAPPROVAL REQUIRED';tokenStats.rejected++;refreshTokenStats();result($('sodResult'),'<strong>REJECTED - PAYLOAD CHANGED:</strong> changed amount/account invalidates prior approval.','blocked');notify('Changed payload rejected.');});
+  $('technicalBtn').addEventListener('click',e=>{$('technicalEvidence').textContent='5 / 5';$('technicalState').textContent='QUEUED';$('technicalPackage').classList.remove('hidden');result($('technicalResult'),'<strong>Review package PH-TECH-006 created:</strong> question, facts, evidence, and required qualification are connected.','approved');e.currentTarget.disabled=true;markControl();notify('Synthetic technical review package created.');});
+  $('traceEventBtn').addEventListener('click',e=>{document.querySelectorAll('.lineage-step').forEach(x=>x.classList.add('linked'));$('lineagePackage').classList.remove('hidden');result($('lineageResult'),'<strong>Evidence package linked:</strong> one event connects eight stages without exposing private identifiers.','approved');e.currentTarget.disabled=true;markControl();notify('Synthetic evidence lineage revealed.');});
+  const reports={fund:{head:['Fund','Revenue','Expense','Ending position'],rows:[['General',1250000,1183000,67000],['Water',682000,641000,41000],['Restricted Capital',75000,28000,47000]]},department:{head:['Department','Budget','Actual','Available'],rows:[['Police',520000,438600,81400],['Fire',310000,247900,62100],['Public Works',440000,365200,74800]]},grant:{head:['Award','Eligible','Excluded','Draft SEFA'],rows:[['PH-FA-2025-019',25650,925,25650]]},exceptions:{head:['Queue','Count','Amount','Next action'],rows:[['Ready for approval',3,38925,'Required-role review'],['Evidence required',2,9060,'Obtain support'],['Purpose hold',1,6800,'Resolve authority']]}};
+  $('reportBtn').addEventListener('click',()=>{const d=reports[$('reportSelect').value];$('reportHead').innerHTML='<tr>'+d.head.map(x=>'<th>'+x+'</th>').join('')+'</tr>';$('reportBody').innerHTML=d.rows.map(row=>'<tr>'+row.map((v,i)=>'<td>'+(typeof v==='number'&&i>0?money(v):v)+'</td>').join('')+'</tr>').join('');result($('reportResult'),'<strong>Preview generated:</strong> synthetic report assembled from the current demonstration population.','approved');notify('Synthetic report preview generated.');});
+  refreshTokenStats(); showPage('overview');
 })();
 </script></body></html>

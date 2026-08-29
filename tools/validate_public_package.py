@@ -69,6 +69,18 @@ def main() -> int:
     check(parser.page_ids == parser.nav_targets, "navigation and page targets differ")
     check(not parser.external_assets, "demo requires an external asset")
 
+    required_controls = {
+        "guidedDemoBtn", "syncBtn", "processRevenueBtn", "bankReconBtn",
+        "integrityCaseBtn", "splostControlBtn", "interfundSettlementBtn",
+        "spendControlBtn", "payrollRunBtn", "payrollRange", "payrollChangeBtn",
+        "payrollVerifyBtn", "departmentRefreshBtn", "sefaAssembleBtn",
+        "assemblyBtn", "noteDraftBtn", "complianceBtn", "intakeBtn",
+        "registryBtn", "selfApproveBtn", "authorizedApproveBtn", "dryRunBtn",
+        "reuseAuthBtn", "changePayloadBtn", "technicalBtn", "traceEventBtn",
+        "reportBtn",
+    }
+    check(required_controls.issubset(set(parser.ids)), "interactive control missing")
+
     prohibited = ["file:///", "mfcl_qbd_sandbox", "private-output", "private-input"]
     public_text_files = [
         path for path in ROOT.rglob("*")
@@ -86,6 +98,7 @@ def main() -> int:
     print("MFCL_PUBLIC_PACKAGE_VALIDATION=PASS")
     print(f"PUBLIC_DEMO_PAGES={len(parser.page_ids)}")
     print(f"EXTERNAL_ASSETS={len(parser.external_assets)}")
+    print(f"INTERACTIVE_CONTROLS={len(required_controls)}")
     print("BROKEN_RELATIVE_LINKS=0")
     print("INTERNAL_PATH_MARKERS=0")
     return 0

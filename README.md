@@ -47,6 +47,15 @@ The repository uses the fictional **City of Pinehaven** and synthetic transactio
 
 The demo is presentation-only. It contains no real municipal data, production credentials, proprietary prompts, private schemas, matching thresholds, security implementation, or posting capability.
 
+### What to try
+
+- **Payroll & Position Funding:** move the fictional allocation from 60%/40% to 70%/30%. The run is blocked until the changed allocation is independently verified, then the $10,000 payroll is recalculated across General and Water.
+- **Role Verification:** attempt self-approval, issue a scoped one-use authorization, consume it in a dry run, reuse it, and change the approved payload. The dashboard tracks issued, used, rejected, and active authorizations.
+- **Revenue Intake:** process a mixed cashier batch, correct a restricted-fund routing exception, and send only the routine payload through an authorized dry run.
+- **Bank, SPLOST, Interfund, Grants, and Reporting:** run each workspace to see transaction dispositions, purpose holds, reciprocal settlement, SEFA inclusion/exclusion, and financial-assembly status.
+
+Every workflow uses fixed Pinehaven synthetic scenarios. Buttons demonstrate governed state transitions and control outcomes; they do not connect to or modify an accounting system.
+
 ## Validation context
 
 The architecture was functionally tested with QuickBooks Desktop 2022 in a controlled, non-live environment. The public demo is sanitized and synthetic; it is not an audit, assurance report, legal opinion, security certification, or production accounting system.
