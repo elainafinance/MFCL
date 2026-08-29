@@ -6,7 +6,7 @@
 
 MFCL connects existing accounting/ERP, utility billing and cashiering, banking, payroll, grants and projects, and supporting documents into one controlled municipal finance layer.
 
-[Open the interactive Pinehaven demo](./index.html) | [Read the LinkedIn case study](./case-study/Municipal_Finance_Control_Layer_LinkedIn_Case_Study.pdf)
+[Open the interactive Pinehaven demo](https://elainafinance.github.io/MFCL/) | [Read the LinkedIn case study](./case-study/Municipal_Finance_Control_Layer_LinkedIn_Case_Study.pdf)
 
 ## The problem
 
@@ -25,21 +25,9 @@ MFCL adds a governed layer around those existing systems. It connects evidence, 
 
 ## Architecture at a glance
 
-```mermaid
-flowchart TD
-    A[Existing municipal systems] --> B[Controlled connectors and ingestion]
-    B --> C[Normalized municipal financial events]
-    C --> D[Specialized agents and deterministic controls]
-    D --> E{Control result}
-    E -->|Supported| F[Required-role verification]
-    E -->|Exception| G[Evidence-backed review queue]
-    G --> F
-    F --> H[Segregation-of-duties check]
-    H --> I[Approved - not posted]
-    I --> J[Controlled posting service]
-    J --> K[Independent re-verification]
-    K --> L[Reporting, close, SEFA and audit support]
-```
+![MFCL systems architecture](./demo/screenshots/systems-architecture.png)
+
+Existing municipal systems → controlled ingestion → normalized financial events → specialized agents and deterministic controls → required-role verification → segregation-of-duties check → controlled posting → independent re-verification → reporting, close, SEFA, and audit support.
 
 The source systems remain the systems of record. MFCL preserves source identity, effective dates, evidence lineage, approval history, and the distinction between a proposed action, an approved action, and a verified posting.
 
@@ -67,19 +55,16 @@ No replacement ERP is required to use the architecture concept.
 
 ## Repository guide
 
-| Location | Purpose |
-| --- | --- |
-| [`architecture/`](./architecture/) | Public system flow, agent map, and approval flow |
-| [`agents/`](./agents/) | High-level specialist-agent responsibilities |
-| [`controls/`](./controls/) | Human-in-the-loop, source authority, scope, validation, and exception controls |
-| [`demo/`](./demo/) | Pinehaven demo guide and public screenshots |
-| [`case-study/`](./case-study/) | Synthetic before-to-outcome case study and LinkedIn PDF |
-| [`VALIDATION.md`](./VALIDATION.md) | Public release checks and limitations |
-| [`PUBLISHING.md`](./PUBLISHING.md) | Free GitHub Pages and LinkedIn publishing steps |
+- [`architecture/`](./architecture/) — Public system flow, agent map, and approval flow
+- [`agents/`](./agents/) — High-level specialist-agent responsibilities
+- [`controls/`](./controls/) — Human-in-the-loop, source authority, scope, validation, and exception controls
+- [`demo/`](./demo/) — Pinehaven demonstration guide and public screenshots
+- [`case-study/`](./case-study/) — Synthetic before-to-outcome case study and LinkedIn PDF
+- [`VALIDATION.md`](./VALIDATION.md) — Public release checks and limitations
+- [`PUBLISHING.md`](./PUBLISHING.md) — Free GitHub Pages and LinkedIn publishing steps
 
 ## Intellectual-property boundary
 
 This public repository demonstrates the system's purpose, governance, control architecture, and user experience. It intentionally excludes proprietary prompts, algorithms, detailed rules, schemas, mappings, thresholds, posting/security implementation, and private validation data.
 
 Concept, architecture, and case study by **Elaina Lockhart**.
-

@@ -1,30 +1,14 @@
 # Data flow
 
-```mermaid
-flowchart TD
-    subgraph Sources[Existing municipal systems]
-      ERP[Accounting / legacy ERP]
-      UTIL[Utility billing and cashiering]
-      BANK[Bank and card evidence]
-      PAY[Payroll]
-      GRANT[Grants and projects]
-      DOCS[Authorities and documents]
-    end
+![MFCL systems architecture](../demo/screenshots/systems-architecture.png)
 
-    Sources --> INGEST[Controlled connectors and ingestion]
-    INGEST --> EVENTS[Normalized financial events]
-    EVENTS --> REGISTRY[Evidence and authority registry]
-    EVENTS --> ROUTER[Specialist-agent routing]
-    REGISTRY --> ROUTER
-    ROUTER --> CONTROLS[Deterministic accounting and policy controls]
-    CONTROLS --> PASS[Supported population]
-    CONTROLS --> EXCEPTION[Exception and proposal queue]
-    PASS --> HUMAN[Required-role verification]
-    EXCEPTION --> HUMAN
-    HUMAN --> POSTING[Separate controlled posting boundary]
-    POSTING --> VERIFY[Independent re-verification]
-    VERIFY --> OUTPUT[Close, reporting, SEFA and audit support]
-```
+1. Existing accounting, utility/cashiering, banking, payroll, grant/project, and document systems remain authoritative.
+2. Controlled connectors ingest bounded source data and evidence.
+3. Source activity is represented as normalized financial events with provenance.
+4. The event router sends activity to specialist agents and deterministic controls.
+5. Supported populations and exceptions move to required-role verification.
+6. Approved items remain separate from the controlled posting boundary.
+7. Independent re-verification supports close, reporting, SEFA, and audit preparation.
 
 ## Design principles
 
@@ -33,4 +17,3 @@ flowchart TD
 3. Economic Event IDs connect transactions to evidence and approvals.
 4. Accounting analysis, approval, posting, and verification are distinct states.
 5. Unresolved evidence remains an exception rather than becoming an assumed conclusion.
-

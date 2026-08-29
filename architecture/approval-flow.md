@@ -1,17 +1,18 @@
 # Approval and posting flow
 
-```mermaid
-stateDiagram-v2
-    [*] --> Exception
-    Exception --> ProposedAdjustment: Evidence and proposed treatment assembled
-    ProposedAdjustment --> Blocked: Self-approval or role conflict
-    ProposedAdjustment --> ApprovedNotPosted: Required role verifies and approves
-    ApprovedNotPosted --> ReapprovalRequired: Approved payload changes
-    ApprovedNotPosted --> ControlledPosting: Separate service validates scope and permission
-    ControlledPosting --> VerificationPending: Simulated or authorized posting completes
-    VerificationPending --> PostedVerified: Independent re-read agrees
-    VerificationPending --> Exception: Re-read differs
-```
+![MFCL approval and segregation-of-duties flow](../demo/screenshots/approval-flow.png)
+
+`EXCEPTION`  
+↓ Evidence and proposed treatment assembled  
+`PROPOSED_ADJUSTMENT`  
+↓ Required role verifies; segregation-of-duties control passes  
+`APPROVED_NOT_POSTED`  
+↓ Separate service validates scope and permission  
+`CONTROLLED_POSTING`  
+↓ Independent re-read agrees  
+`POSTED_VERIFIED`
+
+Self-approval or a role conflict is blocked. A changed approved payload requires new approval. A failed independent re-read returns the item to exception status.
 
 ## Required separation
 
@@ -20,4 +21,3 @@ stateDiagram-v2
 - Approval is scoped to the event and approved payload.
 - Approval does not equal posting.
 - Posting does not equal completion until independently verified.
-
